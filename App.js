@@ -1,21 +1,32 @@
-import { StatusBar } from 'expo-status-bar';
+import {StatusBar} from 'react-native';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {Provider} from 'react-redux';
+import {PersistGate} from 'redux-persist/integration/react';
+
+// import { useFonts } from 'expo-font';
+
+// import {AppLoading} from 'expo';
+
+// import others
+import {persistor, store} from './src/config/configStore';
+import AppNavigation from './src/navigations/AppNavigation';
 
 export default function App() {
+  // const [fontsLoaded] = useFonts({
+  //   Nunito: require('./assets/fonts/Nunito-Regular.ttf'),
+  // });
+
+  // if( !fontsLoaded ) {
+  //   return <AppLoading/>
+  // }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <StatusBar barStyle="light-content" />
+        <AppNavigation />
+      </PersistGate>
+    </Provider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
