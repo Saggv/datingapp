@@ -38,7 +38,7 @@ export const TutorialScreen = ({ navigation }) => {
 
   const onPressNext = (param) =>{
     if(param >=2){
-      scrollRef.current.goToFirstIndex();
+      navigation.navigate('LogSignInScreen')
       return ;
     }else{
       scrollRef.current.scrollToIndex({ index: param + 1, animated: true });
