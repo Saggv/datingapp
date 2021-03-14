@@ -1,4 +1,5 @@
-import React, {useState, useRef} from "react";
+// import node_modules
+import React, { useRef } from 'react';
 import {
   View,
   Text,
@@ -7,11 +8,13 @@ import {
   Dimensions,
   ImageBackground,
   SafeAreaView,
-} from "react-native";
-import { SwiperFlatList } from "react-native-swiper-flatlist";
+} from 'react-native';
+import { SwiperFlatList } from 'react-native-swiper-flatlist';
 
-import tailwind from "tailwind-rn";
+// import others
+import tailwind from 'tailwind-rn';
 
+// main
 const sliderData = [
   {
     index: 1,
@@ -30,32 +33,30 @@ const sliderData = [
     text: 'See who liked you',
     bgUri: require('./images/tutorial-bg-3.png'),
     btnText: 'Start',
-  }
+  },
 ];
 
 export const TutorialScreen = ({ navigation }) => {
   const scrollRef = useRef(null);
 
   const onPressNext = (param) =>{
-    if(param >=2){
-      navigation.navigate('LogSignInScreen')
-      return ;
-    }else{
+    if (param >= 2) {
+      navigation.navigate('LogSignInScreen');
+      return;
+    } else {
       scrollRef.current.scrollToIndex({ index: param + 1, animated: true });
     }
-  }
-
-  return (
-    <SafeAreaView style={tailwind('flex-1')}>
-      <View style={tailwind('flex-1')}>
-        <SwiperFlatList
-          data={sliderData}
-          ref={scrollRef}
-          showPagination
-          paginationDefaultColor='#FEE2E2'
-          paginationActiveColor='#FCA5A5'
-          renderItem={({ item, index }) =>(
-            <View style={style.child}>
+  };
+  return (<SafeAreaView style={tailwind('flex-1')}>
+    <View style={tailwind('flex-1')}>
+      <SwiperFlatList
+        data={sliderData}
+        ref={scrollRef}
+        showPagination
+        paginationDefaultColor="#FEE2E2"
+        paginationActiveColor="#FCA5A5"
+        renderItem={({ item, index }) =>(
+          <View style={style.child}>
             <ImageBackground
               source={item.bgUri}
               style={style.image}
@@ -65,7 +66,7 @@ export const TutorialScreen = ({ navigation }) => {
                   {
                     index !== 2 ? (
                       <Text style={tailwind('mt-3 ml-4 text-red-400 text-lg font-semibold')}>Skip</Text>
-                    ): null
+                    ) : null
                   }
                 </TouchableOpacity>
                 <View style={tailwind('px-11 mb-16')}>
@@ -77,31 +78,30 @@ export const TutorialScreen = ({ navigation }) => {
               </View>
             </ImageBackground>
           </View>
-          )}
-        />
-      </View>
-    </SafeAreaView>
+        )}
+      />
+    </View>
+  </SafeAreaView>
   );
 };
-
-const { width } = Dimensions.get("window");
+const { width } = Dimensions.get('window');
 
 const style = StyleSheet.create({
-  child: { width, justifyContent: "center", flex: 1 },
+  child: { width, justifyContent: 'center', flex: 1 },
   content: {
     flex: 1,
-    flexDirection: "column",
-    justifyContent: "space-between",
+    flexDirection: 'column',
+    justifyContent: 'space-between',
   },
   image: {
     backgroundColor: '#fff',
     flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
+    resizeMode: 'cover',
+    justifyContent: 'center',
   },
   text: {
     fontSize: 24,
-    textAlign: "center",
+    textAlign: 'center',
     paddingHorizontal: 20,
     lineHeight: 33,
     marginBottom: 25,

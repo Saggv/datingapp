@@ -4,10 +4,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // import reducers
 import authSlice from '../containers/App/authSlice';
+import homeSlice from '../containers/Home/slice';
 
 // main
 const appReducer = combineReducers({
   auth: authSlice,
+  home: homeSlice
 });
 
 const rootReducer = (state, action) => {

@@ -1,22 +1,24 @@
+// import node_modules
 import React, { useRef, useState } from 'react';
-
 import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, TextInput } from 'react-native';
 
+// import others
 import tailwind from 'tailwind-rn';
 
-export const OPTSignUpScreen = ({ navigation }) => {
+// main
+export const OTPSignUpScreen = ({ navigation }) => {
   const inputRef = useRef([]);
-  const [optCode, setOptCode] = useState({});
+  const [ optCode, setOptCode ] = useState({});
 
-  const inputArray = [1, 2, 3, 4, 5, 6];
+  const inputArray = [ 1, 2, 3, 4, 5, 6 ];
 
   const InputTextChange = (name, value) => {
     if (name < 6) {
-      inputRef.current[name + 1].focus();
+      inputRef.current[ name + 1 ].focus();
     }
     // let currentOpt = optCode + value.nativeEvent.text;
     let currentOpt = {};
-    currentOpt[name] = value.nativeEvent.text;
+    currentOpt[ name ] = value.nativeEvent.text;
 
     setOptCode({ ...optCode, ...currentOpt });
     console.log(currentOpt, optCode);
@@ -30,18 +32,17 @@ export const OPTSignUpScreen = ({ navigation }) => {
           <Text style={tailwind('text-center text-lg mt-8 mb-8')}>Enter OTP code</Text>
 
           <View style={tailwind('flex-row bg-gray-200 px-4 py-1 rounded-xl mb-14')}>
-            {inputArray.map((input) => (
-              <TextInput
-                key={input}
-                placeholder="--"
-                keyboardType="numeric"
-                onChange={(e) => InputTextChange(input, e)}
-                autoFocus={input === 1}
-                ref={(el) => (inputRef.current[input] = el)}
-                style={style.OPTInput}
-                maxLength={1}
-                // onSubmitEditing={() => inputRef1.current.focus()}
-              />
+            {inputArray.map((input) => (<TextInput
+              key={input}
+              placeholder="--"
+              keyboardType="numeric"
+              onChange={(e) => InputTextChange(input, e)}
+              autoFocus={input === 1}
+              ref={(el) => (inputRef.current[ input ] = el)}
+              style={style.OPTInput}
+              maxLength={1}
+              // onSubmitEditing={() => inputRef1.current.focus()}
+            />
             ))}
           </View>
 
@@ -60,7 +61,6 @@ export const OPTSignUpScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
 const style = StyleSheet.create({
   bg: {
     width: '100%',
