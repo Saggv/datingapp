@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
 
   wrapper: {
     flex: 1,
-    padding: 8,
+    padding: 5,
   },
 });
 

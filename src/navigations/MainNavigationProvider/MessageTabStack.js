@@ -8,29 +8,31 @@ import { MessageScreen } from '../../containers/Message';
 
 // import others
 import { CHAT_ICON, CHAT_ACTIVE_ICON } from '../../../assets/images/BottomTabNavigator';
-import { MESSAGE_SCREEN } from '../../constants/StackNavigation';
+import { CHAT_DETAIL, MESSAGE_SCREEN } from '../../constants/StackNavigation';
+import { ChatDetail } from '../../containers/Message/ChatDetail';
 
 // main
 const Stack = createStackNavigator();
 
-export const IconTabMessage = ({ focused }) => (
-  <Image source={focused ? CHAT_ACTIVE_ICON : CHAT_ICON} style={focused ? styles.messageActiveIcon : styles.messageIcon} />
-);
+export const IconTabMessage = ({ focused }) => <Image source={focused ? CHAT_ACTIVE_ICON : CHAT_ICON} style={focused ? styles.messageActiveIcon : styles.messageIcon} />;
 
 // Screen of tab home show tabs
 export const MessageVisibleTab = () => {
-  return <Stack.Navigator>
-    <Stack.Screen name={MESSAGE_SCREEN} component={MessageScreen} />
-  </Stack.Navigator>;
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name={MESSAGE_SCREEN} component={MessageScreen} />
+    </Stack.Navigator>
+  );
 };
 
 // Screen of tab home hide tabs
 export const getListScreenMessageHideTab = () => {
-  return <></>;
+  return <>
+        <Stack.Screen name={CHAT_DETAIL} component={ChatDetail} />
+  </>;
 };
 
 const styles = StyleSheet.create({
   messageIcon: { width: 31, height: 26 },
   messageActiveIcon: { width: 26, height: 26 },
 });
-

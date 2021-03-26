@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Image, FlatList } from 'react-nativ
 
 import { ChatItem, Search } from '../../components';
 
-const MessageScreen = () => {
+const MessageScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <FlatList
@@ -18,14 +18,14 @@ const MessageScreen = () => {
             <ScrollView style={styles.scrollView} horizontal={true} showsHorizontalScrollIndicator={false}>
               {[1, 2, 3, 4, 9, 5, 6].map((user) => (
                 <View style={styles.user} key={user}>
-                  <Image style={styles.userPhoto} source={{ uri: 'https://i.pinimg.com/originals/63/ac/22/63ac2215c1e5e8dcb44ccf77e2f35c00.jpg' }} />
+                  <Image style={styles.userPhoto} source={{ uri: 'https://picsum.photos/200' }} />
                 </View>
               ))}
             </ScrollView>
           </View>
         }
         renderItem={({ item }) => (
-            <ChatItem />
+            <ChatItem navigation={navigation} />
         )}
         keyExtractor={(item) => item}
       />

@@ -9,9 +9,10 @@ import { LoginScreen } from '../containers/Login/Login';
 import { SignUpScreen } from '../containers/Signup';
 import { OTPSignUpScreen } from '../containers/Signup/OTPSignUp';
 import { HomeScreen } from '../containers/Home';
+import {ChatDetail} from '../containers/Message/ChatDetail';
 
 // import others
-import { TUTORIAL, LOGIN, SIGNUP, OPTSIGNUP, LOGSIGNINSCREEN, HOME_SCREEN} from '../constants/StackNavigation';
+import { TUTORIAL, LOGIN, SIGNUP, OPTSIGNUP, LOGSIGNINSCREEN, HOME_SCREEN, CHAT_DETAIL} from '../constants/StackNavigation';
 
 // main
 const Stack = createStackNavigator();
@@ -32,6 +33,7 @@ export const AuthStack = () => {
       <Stack.Screen name={SIGNUP} component={SignUpScreen} />
       <Stack.Screen name={OPTSIGNUP} component={OTPSignUpScreen} />
       {/* <Stack.Screen name={HOME_SCREEN} component={HomeScreen} /> */}
+      <Stack.Screen name={CHAT_DETAIL} component={ChatDetail} />
     </Stack.Navigator>
   );
 };

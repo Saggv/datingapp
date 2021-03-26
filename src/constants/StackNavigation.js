@@ -17,3 +17,4 @@ export const LOGIN = 'Login';
 export const SIGNUP = 'SignUp';
 export const OPTSIGNUP = 'OPTSignUp';
 export const HOME_DETAIL = 'HomeDetail';
+export const CHAT_DETAIL = 'ChatDetail';

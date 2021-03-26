@@ -32,7 +32,7 @@ export default function SwipeableImage({ user, swipesRef, navigation }) {
 
       <View style={styles.footer}>
         <TouchableOpacity style={styles.button} onPress={handlePass}>
-          <Ionicons name="close" size={32} color="#000" />
+          <Ionicons name="close-outline" size={32} color="#333" />
         </TouchableOpacity>
 
         <View style={styles.info}>

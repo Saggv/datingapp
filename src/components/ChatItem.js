@@ -1,11 +1,11 @@
 import React from 'react';
 import { Text, View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 
-export const ChatItem =() => {
+export const ChatItem = ({ navigation })  => {
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={()=>navigation.navigate('ChatDetail')}>
       <TouchableOpacity style={styles.chatItemPhoto}>
-        <Image style={styles.photo} source={{ uri: 'https://i.pinimg.com/originals/63/ac/22/63ac2215c1e5e8dcb44ccf77e2f35c00.jpg' }} />
+        <Image style={styles.photo} source={{ uri: 'https://picsum.photos/200' }} />
       </TouchableOpacity>
 
       <View style={styles.chatContent}>

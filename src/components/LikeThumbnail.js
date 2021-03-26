@@ -7,14 +7,14 @@ const {width} = Dimensions.get('window');
 export default function LikeThumbnail() {
   return (
     <View style={styles.container}>
-      <Image style={styles.photo} source={{ uri: 'https://i.pinimg.com/originals/90/9b/cc/909bcc8cd388977f23b0ea8b4165738d.jpg' }} />
+      <Image style={styles.photo} source={{ uri: 'https://picsum.photos/200' }} />
 
       <View style={styles.info}>
         <Text style={styles.secondaryText}>Samanta</Text>
 
         <View style={styles.action}>
           <TouchableOpacity style={styles.button}>
-            <Ionicons name="close" size={32} color="#000" />
+            <Ionicons name="close-outline" size={32} color="#000" />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button}>
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 4,
-    borderRadius: 20,
+    borderRadius: 10,
     overflow: 'hidden',
     position: 'relative',
   },
