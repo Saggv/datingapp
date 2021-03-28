@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, TextInpu
 
 // import others
 import tailwind from 'tailwind-rn';
+import {SIGNUPSTEP2} from '../../constants/StackNavigation';
 
 // main
 export const OTPSignUpScreen = ({ navigation }) => {
@@ -46,7 +47,7 @@ export const OTPSignUpScreen = ({ navigation }) => {
             ))}
           </View>
 
-          <TouchableOpacity style={tailwind('py-2 bg-red-300 rounded-2xl text-center w-8/12')} onPress={() => navigation.navigate('Login')}>
+          <TouchableOpacity style={tailwind('py-2 bg-red-300 rounded-2xl text-center w-8/12')} onPress={() => navigation.navigate(SIGNUPSTEP2)}>
             <Text style={tailwind('text-center text-white text-lg')} >Next</Text>
           </TouchableOpacity>
           <TouchableOpacity style={tailwind('py-2  rounded-2xl border border-red-300 text-center w-8/12 mt-4')} onPress={() => navigation.navigate('OPTSignUp')}>

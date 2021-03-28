@@ -14,9 +14,7 @@ const appReducer = combineReducers({
 
 const rootReducer = (state, action) => {
   if (action.type === 'auth/logout') {
-    state = {
-      metadata: state.metadata,
-    };
+     state={};
     AsyncStorage.removeItem('persist:root');
   }
 

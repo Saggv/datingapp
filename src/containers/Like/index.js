@@ -1,9 +1,18 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import React, {useLayoutEffect} from 'react';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
 
 import LikeThumbnail from '../../components/LikeThumbnail';
 
-const LikeScreen = () => {
+const LikeScreen = ({ navigation }) => {
+  useLayoutEffect(() => {
+    // // navigation.setOptions({
+    // //   header: null,
+    // // });
+    // navigation.hideHeader = true;
+    navigation.setOptions({headerShown: false});
+  }, [navigation]);
+
+
   const likes = [1, 2, 3, 4, 5, 6, 7];
   return (
       <FlatList

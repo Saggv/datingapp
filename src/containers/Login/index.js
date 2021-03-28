@@ -29,7 +29,7 @@ export const LogSignInScreen = ({
           <TouchableOpacity style={tailwind('py-2 bg-red-300 rounded-2xl text-center')} onPress={() => navigation.navigate('SignUp')}>
             <Text style={tailwind('text-center text-white text-lg')}>Sign Up</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={tailwind('py-2 bg-white rounded-2xl text-center mt-4')}>
+          <TouchableOpacity style={tailwind('py-2 bg-white rounded-2xl text-center mt-4')} onPress={() => navigation.navigate('Login')}>
             <Text style={tailwind('text-center text-red-300 text-lg')}>Login</Text>
           </TouchableOpacity>
         </View>

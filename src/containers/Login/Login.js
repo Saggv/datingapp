@@ -1,35 +1,66 @@
 // import node_modules
-import React, { useRef } from 'react';
-// import PhoneInput from 'react-native-phone-input';
+import React, { useRef, useState } from 'react';
+import {useDispatch } from 'react-redux'
 import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, TextInput } from 'react-native';
+import PhoneInput from 'react-native-phone-number-input';
+
+import {login} from '../App/authSlice';
 
 // import others
 import tailwind from 'tailwind-rn';
 
 // main
 export const LoginScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const [value, setValue] = useState('');
   const phone = useRef(null);
 
+
+  const Login = () =>{
+    dispatch(login());
+    //  navigation.navigate('Home');
+  }
+
   return (
-    <SafeAreaView style={tailwind('flex-1')}>
+    <SafeAreaView style={tailwind('flex-1 bg-white')}>
       <View style={tailwind('flex-1 justify-between')}>
         <View style={style.bg}>
           <Image source={require('./images/login-image.png')} style={style.image} />
         </View>
 
-        <Text style={tailwind('text-center text-lg')}>Your everyday personal assistaddnt.</Text>
+        <View>
+          <Text style={tailwind('text-center text-lg')}>Your everyday personal assistaddnt.</Text>
+        </View>
 
-        <View style={tailwind('flex-1 px-10 pt-3  justify-center')}>
-          {/* <View style={tailwind('bg-gray-200 rounded-lg p-2 w-full')}>
-            <PhoneInput ref={phone} initialCountry="us" autoFormat offset={16} flagStyle={{ width: 30, height: 30 }} textProps={{ placeholder: 'Telephone number' }} />
-          </View> */}
+        <View style={tailwind('flex-1 px-6 pt-3  justify-center')}>
+          <View style={tailwind('w-full bg-red-500')}>
+          <PhoneInput
+            ref={phone}
+            defaultCode="VN"
+            placeholder="-- -- -- --   -- -- --   -- -- --"
+            defaultValue={value}
+            onChangeText={(text) => {
+              setValue(text);
+            }}
+            // onChangeFormattedText={(text) => {
+            //   console.log(text);
+            // }}
+            withDarkTheme
+            withShadow={false}
+            autoFocus
+            containerStyle={{ backgroundColor: '#f9fafb', width: '100%'}}
+            textContainerStyle={{paddingVertical: 8, borderRadius: 8, width: '100%'}}
+          />
+          </View>
 
           <View style={tailwind('w-full')}>
-            <TextInput secureTextEntry={true}  style={tailwind('bg-gray-200 rounded-xl mt-4 p-2 px-10')} placeholder="Enter your password" />
+            <TextInput secureTextEntry={true} style={tailwind('bg-gray-50 rounded mt-4 p-2 px-10')} placeholder="Enter your password" />
           </View>
 
           <TouchableOpacity style={tailwind('py-2 bg-red-300 rounded-2xl text-center mt-10')}>
-            <Text style={tailwind('text-center text-white text-lg')} onPress={()=> navigation.navigate('Home')} >Login</Text>
+            <Text style={tailwind('text-center text-white text-lg')} onPress={Login}>
+              Login
+            </Text>
           </TouchableOpacity>
           <Text style={tailwind('text-center mt-3')}>Forgot password?</Text>
         </View>
@@ -43,7 +74,7 @@ const style = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    flex:1,
+    flex: 1,
   },
   image: {
     width: '100%',

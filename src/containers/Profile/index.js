@@ -1,14 +1,23 @@
 import React from 'react';
+import { useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { Feather } from '@expo/vector-icons'; 
 import { Ionicons } from '@expo/vector-icons';
 
-const ProfileScreen = () => {
+import {logout} from '../App/authSlice';
+
+const ProfileScreen =({ navigation })=> {
+  const dispatch = useDispatch();
+
+  const Logout = () =>{
+    dispatch(logout());
+     navigation.navigate('Login');
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.button}>
-          <Ionicons name="settings" size={25} color="#000" />
+          <Ionicons name="settings" size={25} color="#000" onPress={()=> Logout()} />
         </TouchableOpacity>
         <Image style={styles.avatar} source={{uri: 'https://picsum.photos/200'}} />
         <Text style={styles.primaryText}>Natan, 34</Text>

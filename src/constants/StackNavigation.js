@@ -16,5 +16,6 @@ export const LOGSIGNINSCREEN= "LogSignInScreen";
 export const LOGIN = 'Login';
 export const SIGNUP = 'SignUp';
 export const OPTSIGNUP = 'OPTSignUp';
+export const SIGNUPSTEP2 = 'SignUpStep2';
 export const HOME_DETAIL = 'HomeDetail';
 export const CHAT_DETAIL = 'ChatDetail';
