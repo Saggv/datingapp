@@ -1,28 +1,48 @@
 // import node_modules
 import React, { useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, TextInput } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 
 // import others
 import tailwind from 'tailwind-rn';
-import {SIGNUPSTEP2} from '../../constants/StackNavigation';
+import { SIGNUPSTEP2 } from '../../constants/StackNavigation';
+import { firebase } from '../../firebase/config';
+
+
+const testId = `ALiwoWLMJIewjpcRCIL12X2L_rF2YZ2bOIqvag3geMWd1s8ZnGXUW7FNFr5K2C-4-05thGp6Bwi--EZXwIWXoq1wQo4H_-piuftyfHMglx7voBr8yyt9SkNY7n55iI02v9J3WGNQVB1HAoMGVOhy2dAebP8setbw__6XK_pwpO8XlGvGZzPhEWM9seWj09UtLjuIjyHAfejvE0HG8mmVJAjEqJrd8exoWg
+ALiwoWLMJIewjpcRCIL12X2L_rF2YZ2bOIqvag3geMWd1s8ZnGXUW7FNFr5K2C-4-05thGp6Bwi--EZXwIWXoq1wQo4H_-piuftyfHMglx7voBr8yyt9SkNY7n55iI02v9J3WGNQVB1HAoMGVOhy2dAebP8setbw__6XK_pwpO8XlGvGZzPhEWM9seWj09UtLjuIjyHAfejvE0HG8mmVJAjEqJrd8exoWg`
 
 // main
 export const OTPSignUpScreen = ({ navigation }) => {
+  const route = useRoute();
   const inputRef = useRef([]);
-  const [ optCode, setOptCode ] = useState({});
+  const [verificationCode, setVerificationCode] = useState({});
 
-  const inputArray = [ 1, 2, 3, 4, 5, 6 ];
+  // console.log(route.params.verificationId);
+
+  const inputArray = [1, 2, 3, 4, 5, 6];
 
   const InputTextChange = (name, value) => {
     if (name < 6) {
-      inputRef.current[ name + 1 ].focus();
+      inputRef.current[name + 1].focus();
     }
     // let currentOpt = optCode + value.nativeEvent.text;
     let currentOpt = {};
-    currentOpt[ name ] = value.nativeEvent.text;
+    currentOpt[name] = value.nativeEvent.text;
 
-    setOptCode({ ...optCode, ...currentOpt });
-    console.log(currentOpt, optCode);
+    let result = '' + Object.values(currentOpt).join();
+
+    setVerificationCode( verificationCode +result);
+  };
+
+  const confirmOPTCode = async () => {
+    try {
+      const credential = firebase.auth.PhoneAuthProvider.credential(testId, verificationCode);
+      await firebase.auth().signInWithCredential(credential);
+      alert('Phone authentication successful 👍');
+    } catch (err) {
+      alert(err);
+    }
   };
 
   return (
@@ -33,22 +53,25 @@ export const OTPSignUpScreen = ({ navigation }) => {
           <Text style={tailwind('text-center text-lg mt-8 mb-8')}>Enter OTP code</Text>
 
           <View style={tailwind('flex-row bg-gray-200 px-4 py-1 rounded-xl mb-14')}>
-            {inputArray.map((input) => (<TextInput
-              key={input}
-              placeholder="--"
-              keyboardType="numeric"
-              onChange={(e) => InputTextChange(input, e)}
-              autoFocus={input === 1}
-              ref={(el) => (inputRef.current[ input ] = el)}
-              style={style.OPTInput}
-              maxLength={1}
-              // onSubmitEditing={() => inputRef1.current.focus()}
-            />
+            {inputArray.map((input) => (
+              <TextInput
+                key={input}
+                placeholder="--"
+                keyboardType="numeric"
+                onChange={(e) => InputTextChange(input, e)}
+                autoFocus={input === 1}
+                ref={(el) => (inputRef.current[input] = el)}
+                style={style.OPTInput}
+                maxLength={1}
+                // onSubmitEditing={() => inputRef1.current.focus()}
+              />
             ))}
           </View>
 
           <TouchableOpacity style={tailwind('py-2 bg-red-300 rounded-2xl text-center w-8/12')} onPress={() => navigation.navigate(SIGNUPSTEP2)}>
-            <Text style={tailwind('text-center text-white text-lg')} >Next</Text>
+            <Text style={tailwind('text-center text-white text-lg')} onPress={confirmOPTCode}>
+              Next
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity style={tailwind('py-2  rounded-2xl border border-red-300 text-center w-8/12 mt-4')} onPress={() => navigation.navigate('OPTSignUp')}>
             <Text style={tailwind('text-center text-red-300 text-lg')}>Resend OTP</Text>

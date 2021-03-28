@@ -2,7 +2,6 @@ import {StatusBar} from 'react-native';
 import React from 'react';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
-
 // import { useFonts } from 'expo-font';
 
 // import {AppLoading} from 'expo';
@@ -19,6 +18,7 @@ export default function App() {
   // if( !fontsLoaded ) {
   //   return <AppLoading/>
   // }
+
 
   return (
     <Provider store={store}>
