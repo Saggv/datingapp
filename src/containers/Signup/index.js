@@ -3,11 +3,12 @@ import React, { useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, TextInput } from 'react-native';
 import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
 import PhoneInput from 'react-native-phone-number-input';
+import * as FirebaseRecaptcha from 'expo-firebase-recaptcha';
 
 // import others
 import tailwind from 'tailwind-rn';
 import { firebase, firebaseConfig } from '../../firebase/config';
-import {OPTSIGNUP} from '../../constants/StackNavigation';
+import { OPTSIGNUP } from '../../constants/StackNavigation';
 
 // main
 export const SignUpScreen = ({ navigation }) => {
@@ -15,22 +16,20 @@ export const SignUpScreen = ({ navigation }) => {
   const phoneInput = useRef(null);
   const [phoneValue, setPhoneValue] = useState();
   const [phoneNumber, setPhoneNumber] = useState();
-  const [verificationId, setVerificationId] = useState();
-  const [verificationCode, setVerificationCode] = useState();
 
   const attemptInvisibleVerification = false;
 
   const sendVerificationCode = async () => {
-    // try {
-    //   const phoneProvider = new firebase.auth.PhoneAuthProvider();
-    //   const res = await phoneProvider.verifyPhoneNumber(phoneNumber, recaptchaVerifier.current);
-    //   setVerificationId(res);
-    //   if(verificationId){
-          navigation.navigate(OPTSIGNUP, {verificationId: verificationId});
-    //   }
-    // } catch (err) {
-    //   alert(err);
-    // }
+    // navigation.navigate(OPTSIGNUP, { verificationId: verificationId });
+    try {
+      const phoneProvider = new firebase.auth.PhoneAuthProvider();
+      const res = await phoneProvider.verifyPhoneNumber(phoneNumber, recaptchaVerifier.current);
+      if(res){
+      return  navigation.navigate(OPTSIGNUP, { verificationId: res, phone: phoneNumber});
+      }
+    } catch (err) {
+      alert(err);
+    }
   };
 
   return (

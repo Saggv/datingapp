@@ -2,44 +2,26 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, TextInput } from 'react-native';
 import { useRoute } from '@react-navigation/native';
+import OTPTextView from 'react-native-otp-textinput';
 
 // import others
 import tailwind from 'tailwind-rn';
 import { SIGNUPSTEP2 } from '../../constants/StackNavigation';
 import { firebase } from '../../firebase/config';
 
-
-const testId = `ALiwoWLMJIewjpcRCIL12X2L_rF2YZ2bOIqvag3geMWd1s8ZnGXUW7FNFr5K2C-4-05thGp6Bwi--EZXwIWXoq1wQo4H_-piuftyfHMglx7voBr8yyt9SkNY7n55iI02v9J3WGNQVB1HAoMGVOhy2dAebP8setbw__6XK_pwpO8XlGvGZzPhEWM9seWj09UtLjuIjyHAfejvE0HG8mmVJAjEqJrd8exoWg
-ALiwoWLMJIewjpcRCIL12X2L_rF2YZ2bOIqvag3geMWd1s8ZnGXUW7FNFr5K2C-4-05thGp6Bwi--EZXwIWXoq1wQo4H_-piuftyfHMglx7voBr8yyt9SkNY7n55iI02v9J3WGNQVB1HAoMGVOhy2dAebP8setbw__6XK_pwpO8XlGvGZzPhEWM9seWj09UtLjuIjyHAfejvE0HG8mmVJAjEqJrd8exoWg`
-
+firebase.auth().settings.appVerificationDisabledForTesting = true;
 // main
 export const OTPSignUpScreen = ({ navigation }) => {
   const route = useRoute();
-  const inputRef = useRef([]);
   const [verificationCode, setVerificationCode] = useState({});
-
-  // console.log(route.params.verificationId);
-
-  const inputArray = [1, 2, 3, 4, 5, 6];
-
-  const InputTextChange = (name, value) => {
-    if (name < 6) {
-      inputRef.current[name + 1].focus();
-    }
-    // let currentOpt = optCode + value.nativeEvent.text;
-    let currentOpt = {};
-    currentOpt[name] = value.nativeEvent.text;
-
-    let result = '' + Object.values(currentOpt).join();
-
-    setVerificationCode( verificationCode +result);
-  };
+  const otpInput = useRef(null);
 
   const confirmOPTCode = async () => {
     try {
-      const credential = firebase.auth.PhoneAuthProvider.credential(testId, verificationCode);
+      const credential = await firebase.auth.PhoneAuthProvider.credential(route.params.verificationId, verificationCode);
       await firebase.auth().signInWithCredential(credential);
       alert('Phone authentication successful 👍');
+      navigation.navigate(SIGNUPSTEP2, {phone: route.params.phone});
     } catch (err) {
       alert(err);
     }
@@ -52,26 +34,10 @@ export const OTPSignUpScreen = ({ navigation }) => {
           <Image source={require('./images/phone.png')} style={style.image} />
           <Text style={tailwind('text-center text-lg mt-8 mb-8')}>Enter OTP code</Text>
 
-          <View style={tailwind('flex-row bg-gray-200 px-4 py-1 rounded-xl mb-14')}>
-            {inputArray.map((input) => (
-              <TextInput
-                key={input}
-                placeholder="--"
-                keyboardType="numeric"
-                onChange={(e) => InputTextChange(input, e)}
-                autoFocus={input === 1}
-                ref={(el) => (inputRef.current[input] = el)}
-                style={style.OPTInput}
-                maxLength={1}
-                // onSubmitEditing={() => inputRef1.current.focus()}
-              />
-            ))}
-          </View>
+          <OTPTextView ref={otpInput} handleTextChange={setVerificationCode} inputCount={6} keyboardType="numeric" containerStyle={{ padding: 20 }} textInputStyle={{ width: 30 }} />
 
-          <TouchableOpacity style={tailwind('py-2 bg-red-300 rounded-2xl text-center w-8/12')} onPress={() => navigation.navigate(SIGNUPSTEP2)}>
-            <Text style={tailwind('text-center text-white text-lg')} onPress={confirmOPTCode}>
-              Next
-            </Text>
+          <TouchableOpacity style={tailwind('py-2 bg-red-300 rounded-2xl text-center w-8/12')} onPress={confirmOPTCode}>
+            <Text style={tailwind('text-center text-white text-lg')}>Next</Text>
           </TouchableOpacity>
           <TouchableOpacity style={tailwind('py-2  rounded-2xl border border-red-300 text-center w-8/12 mt-4')} onPress={() => navigation.navigate('OPTSignUp')}>
             <Text style={tailwind('text-center text-red-300 text-lg')}>Resend OTP</Text>

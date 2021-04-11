@@ -1,9 +1,15 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 
 import tailwind from 'tailwind-rn';
+import { firestore, firebase } from '../../firebase/config';
 
 export const SignUpStep2 = ({ navigation }) => {
+  const route = useRoute();
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: (props) => (
@@ -20,22 +26,48 @@ export const SignUpStep2 = ({ navigation }) => {
     });
   }, [navigation]);
 
+  const addPassword = async () => {
+    if (password !== confirmPassword) {
+      return alert('Please check again. Your password does not match each other!');
+    }
+
+    try {
+      console.log(route.params.phone);
+      await firebase.auth().createUserWithEmailAndPassword(`${route.params.phone}@gmail.com`, password);
+
+      const currentUser = firebase.auth().currentUser;
+
+      await firestore
+        .collection('users')
+        .doc(currentUser.uid)
+        .set({
+          email: `${route.params.phone}@gmail.com`,
+        });
+
+      alert('Update your password');
+
+      navigation.navigate('Login');
+    } catch (err) {
+      alert('Something went wrong...Please check again!');
+    }
+  };
+
   return (
     <View style={tailwind('justify-center flex-1 bg-white')}>
       <View style={tailwind('w-full')}>
-        <TextInput secureTextEntry={true} style={tailwind('bg-gray-200  p-2 px-4')} placeholder="Enter your password" />
+        <TextInput secureTextEntry={true} style={tailwind('bg-gray-200  p-2 px-4')} onChangeText={setPassword} placeholder="Enter your password" />
       </View>
 
       <View style={tailwind('w-full')}>
-        <TextInput secureTextEntry={true} style={tailwind('bg-gray-200  mt-6 p-2 px-4')} placeholder="Confirm password" />
+        <TextInput secureTextEntry={true} style={tailwind('bg-gray-200  mt-6 p-2 px-4')} onChangeText={setConfirmPassword} placeholder="Confirm password" />
       </View>
 
       <View style={tailwind('px-10')}>
-      <TouchableOpacity style={tailwind('py-2 bg-red-300 rounded-xl text-center mt-8')}>
-        <Text style={tailwind('text-center text-white text-lg')} onPress={() => navigation.navigate('Login')}>
-          Next
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={tailwind('py-2 bg-red-300 rounded-xl text-center mt-8')}>
+          <Text style={tailwind('text-center text-white text-lg')} onPress={addPassword}>
+            Next
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
