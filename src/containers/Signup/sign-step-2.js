@@ -46,7 +46,7 @@ export const SignUpStep2 = ({ navigation }) => {
 
       alert('Update your password');
 
-      navigation.navigate('Login');
+      navigation.navigate('UserInfo');
     } catch (err) {
       alert('Something went wrong...Please check again!');
     }
