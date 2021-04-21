@@ -3,10 +3,12 @@ import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, TextInpu
 import { Paragraph, RadioButton, Colors, TouchableRipple, useTheme } from 'react-native-paper';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
+import { useRoute } from '@react-navigation/native';
 
 import tailwind from 'tailwind-rn';
 
 export const UserInfoScreen = ({ navigation }) => {
+  const route = useRoute();
   const [name, setName] = useState('');
   const [gender, setGender] = useState('female');
   const [age, setAge] = useState('Please select your date of bird');
@@ -24,13 +26,12 @@ export const UserInfoScreen = ({ navigation }) => {
   };
 
   const onSubmit =() =>{
-    const data = {name, gender, age, address, job};
+    const data = {name, gender, age, address, job, id: route.params.id};
     if(!name || age === 'Please select your date of bird' || !address || !job){
       alert('Please fill all the fields!');
       return;
     }
-    console.log(data);
-    navigation.navigate('EditProfile',[data]);
+    navigation.navigate('EditProfile',{data});
   }
 
   return (

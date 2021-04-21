@@ -2,17 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import moment from 'moment';
+import { useRoute } from '@react-navigation/native';
+import { storage, firestore} from '../../firebase/config';
 
 import tailwind from 'tailwind-rn';
 
 const EditProfileScreen = ({ navigation }) => {
+  const route = useRoute();
   const [avatar, setAvatar] = useState(null);
   const [primaryImage, setPrimaryImage] = useState(null);
   const [secondaryImage, setSecondaryImage] = useState(null);
   const [tertiaryImage, setTertiaryImage] = useState(null);
   const [desc, setDesc] = useState(null);
+  const [age, setAge] = useState(null);
 
   useEffect(() => {
+    const currentDate = moment().format('DD/MM/YYYY').split("/").map(date => + date);
+
+    const userBirthday = route.params.data.age.split("/").map(date => + date);
+
+    setAge(moment(currentDate.reverse()).diff(moment(userBirthday.reverse()), 'years'));
+
     (async () => {
       if (Platform.OS !== 'web') {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -34,7 +45,6 @@ const EditProfileScreen = ({ navigation }) => {
         allowsEditing: true,
         aspect: [1, 1],
         quality: 1,
-        base64: true,
       });
     } else {
       result = await ImagePicker.launchCameraAsync({
@@ -42,7 +52,6 @@ const EditProfileScreen = ({ navigation }) => {
         allowsEditing: true,
         aspect: [1, 1],
         quality: 1,
-        base64: true,
       });
     }
 
@@ -51,37 +60,68 @@ const EditProfileScreen = ({ navigation }) => {
     }
   };
 
-  const onSubmit = () =>{
-    const data = {
-      avatar,
-      primaryImage, 
-      secondaryImage,
-      tertiaryImage,
-      desc
-    };
-    console.log(data);
+  const uploadImage = async(uri, name) =>{
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const ref = storage.ref().child(name);
+    return await ref.put(blob);
+  }
+
+  const onSubmit = async() =>{
+    const avatarUrl = await getUploadURL(avatar, 'avatar');
+    const primaryUrl = await getUploadURL(primaryImage, 'primary_image');
+    const secondaryUrl = await getUploadURL(secondaryImage, 'secondary_image');
+    const tertiaryUrl = await getUploadURL(tertiaryImage, 'tertiary_image');
+
+    const {name, gender, age, address, job, id} = route.params.data;
+
+    await firestore
+    .collection('users')
+    .doc(id)
+    .set({
+      name,
+      gender,
+      age,
+      address,
+      job,
+      desc,
+      avatarUrl,
+      primaryUrl,
+      secondaryUrl,
+      tertiaryUrl
+    });
+
+    alert('Update your profile success!');
+
+    navigation.navigate('Login');
+  };
+
+  const getUploadURL = async (image, folderName) =>{
+    const res = await uploadImage(image, `${folderName}/${Math.random()}`);
+    const result = await res.ref.getDownloadURL();
+    return result;
   }
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => pickImage(setAvatar)}>
-          <View style={[tailwind('w-24 h-24 bg-red-200 text-center flex justify-center items-center rounded-full overflow-hidden')]}>
+          <View style={[tailwind('w-24 h-24 bg-gray-200 text-center flex justify-center items-center rounded-full overflow-hidden')]}>
             {avatar ? <Image style={styles.avatar} source={{ uri: avatar }} /> : <Ionicons name="camera-reverse-outline" size={25} color="#fff" />}
           </View>
         </TouchableOpacity>
 
-        <Text style={styles.primaryText}>Natan, 34</Text>
-        <Text style={styles.paragrahpText}>Palo Alto, CA</Text>
+        <Text style={styles.primaryText}>{route.params.data.name}, {age}</Text>
+        <Text style={styles.paragrahpText}>{route.params.data.address}</Text>
       </View>
 
       <View style={[styles.grid, tailwind('relative mb-44')]}>
-        <TouchableOpacity style={[styles.gridItemLg, tailwind('bg-red-100 flex justify-center items-center absolute top-0'), {transform: [{ rotateY: '-5deg' }, { rotateZ: '-5deg' }], }]} onPress={() => pickImage(setPrimaryImage)}>
+        <TouchableOpacity style={[styles.gridItemLg, tailwind('bg-red-100 flex justify-center items-center absolute top-0'), {transform: [{ rotateY: '-5deg' }, { rotateZ: '-5deg' }]}]} onPress={() => pickImage(setPrimaryImage)}>
           {primaryImage ? <Image style={styles.image} source={{ uri: primaryImage }} /> : <Ionicons name="add" size={30} color="#fff" />}
         </TouchableOpacity>
 
         <View style={[styles.gridIems, { position: 'relative', width: '100%' }]}>
-          <TouchableOpacity style={[tailwind('w-48 h-48 bg-red-100 flex justify-center items-center ml-2 top-4 rounded-lg'), { transform: [{ rotateY: '5deg' }, { rotateZ: '5deg' }], right: 0, top: 120, position: 'absolute' }]} onPress={() => pickImage(setSecondaryImage)}>
+          <TouchableOpacity style={[tailwind('w-48 h-48 bg-gray-100 flex justify-center items-center ml-2 top-4 rounded-lg'), { transform: [{ rotateY: '5deg' }, { rotateZ: '5deg' }], right: 0, top: 120, position: 'absolute' }]} onPress={() => pickImage(setSecondaryImage)}>
             {secondaryImage ? <Image style={[styles.image, {transform: [{ rotateY: '-10deg' }, { rotateZ: '-10deg' }]}]} source={{ uri: secondaryImage }} /> : <Ionicons name="add" size={30} color="#fff" />}
           </TouchableOpacity>
 
@@ -193,7 +233,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: 100,
-    backgroundColor: '#FDAAA3',
+    backgroundColor: '#D1D5DB',
   },
 
   about: {

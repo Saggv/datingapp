@@ -32,7 +32,6 @@ export const SignUpStep2 = ({ navigation }) => {
     }
 
     try {
-      console.log(route.params.phone);
       await firebase.auth().createUserWithEmailAndPassword(`${route.params.phone}@gmail.com`, password);
 
       const currentUser = firebase.auth().currentUser;
@@ -46,7 +45,7 @@ export const SignUpStep2 = ({ navigation }) => {
 
       alert('Update your password');
 
-      navigation.navigate('UserInfo');
+      navigation.navigate('UserInfo', {id: currentUser.uid});
     } catch (err) {
       alert('Something went wrong...Please check again!');
     }
@@ -55,11 +54,11 @@ export const SignUpStep2 = ({ navigation }) => {
   return (
     <View style={tailwind('justify-center flex-1 bg-white')}>
       <View style={tailwind('w-full')}>
-        <TextInput secureTextEntry={true} style={tailwind('bg-gray-200  p-2 px-4')} onChangeText={setPassword} placeholder="Enter your password" />
+        <TextInput secureTextEntry={true} style={tailwind('bg-gray-200  p-2 px-4 text-center')} onChangeText={setPassword} placeholder="Enter your password" />
       </View>
 
       <View style={tailwind('w-full')}>
-        <TextInput secureTextEntry={true} style={tailwind('bg-gray-200  mt-6 p-2 px-4')} onChangeText={setConfirmPassword} placeholder="Confirm password" />
+        <TextInput secureTextEntry={true} style={tailwind('bg-gray-200  mt-6 p-2 px-4 text-center')} onChangeText={setConfirmPassword} placeholder="Confirm password" />
       </View>
 
       <View style={tailwind('px-10')}>

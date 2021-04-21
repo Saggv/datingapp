@@ -21,6 +21,9 @@ export const LoginScreen = ({ navigation }) => {
   const Login = async () => {
     try{
       const res = await firebase.auth().signInWithEmailAndPassword(`${phoneNumber}@gmail.com`,password);
+      if(!res){
+        return  alert('Some thing went wrong!');
+      }
       dispatch(login());
       return navigation.navigate('Home');
     }catch(err){
