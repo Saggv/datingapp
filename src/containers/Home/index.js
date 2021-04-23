@@ -10,10 +10,12 @@ import { Ionicons } from '@expo/vector-icons';
 
 import Swipes from '../../components/Swipes';
 
+import { firestore} from '../../firebase/config';
+
 export const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const { data } = useSelector((state) => state.home);
-  const [users, setUsers] = useState(data);
+  const [users, setUsers] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [gender, setGender] = useState(0);
   const [value, setValue] = useState([ 18, 28]);
@@ -49,13 +51,29 @@ export const HomeScreen = ({ navigation }) => {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    dispatch(getData());
-  }, [dispatch]);
+  useEffect(() =>{
+    const unsubscribe = firestore.collection('users')
+    .onSnapshot(querySnapshot => {
+      const users = querySnapshot.docs.map(documentSnapshot => {
+        return {
+          _id: documentSnapshot.id,
+          ...documentSnapshot.data()
+        };
+      });
 
-  useEffect(() => {
-    setUsers(data);
-  }, [data]);
+      setUsers(users);
+    });
+   return () => unsubscribe();
+  }, []);
+
+
+  // useEffect(() => {
+  //   dispatch(getData());
+  // }, [dispatch]);
+
+  // useEffect(() => {
+  //   setUsers(data);
+  // }, [data]);
 
   function handleLike() {
     nextUser();
@@ -72,7 +90,7 @@ export const HomeScreen = ({ navigation }) => {
 
   function submitFilter(){
     setVisible(false)
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -128,7 +146,8 @@ export const HomeScreen = ({ navigation }) => {
           </View>
         </Modal>
       </View>
-      {users.length > 1 && users.map((u, i) => currentIndex === i && <Swipes key={i} currentIndex={currentIndex} users={users} handleLike={handleLike} handlePass={handlePass} navigation={navigation}></Swipes>)}
+      
+      {users.length >= 1 && users.map((u, i) => currentIndex === i && <Swipes key={i} currentIndex={currentIndex} users={users} handleLike={handleLike} handlePass={handlePass} navigation={navigation}></Swipes>)}
     </View>
   );
 };

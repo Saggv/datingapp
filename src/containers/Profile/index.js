@@ -27,7 +27,7 @@ const ProfileScreen =({ navigation })=> {
     .catch(err => {
       console.log('Error getting documents', err);
     });
-  },[])
+  },[]);
 
   const Logout = () =>{
     dispatch(logout());

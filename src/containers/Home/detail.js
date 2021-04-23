@@ -1,8 +1,30 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, Text, StyleSheet, Dimensions, ScrollView, Image } from 'react-native';
 import { SwiperFlatList } from 'react-native-swiper-flatlist';
+import {useRoute} from '@react-navigation/native';
+import moment from 'moment';
+
+import {firestore} from '../../firebase/config';
 
 export const HomeDetail = ({ navigation }) => {
+  const [user, setUser] = useState();
+  const [age, setAge] = useState();
+  const route = useRoute();
+  console.log(route.params.id);
+
+  useEffect(()=>{
+    firestore.collection('users').doc(route.params.id).get()
+    .then(res => {
+      setUser(res.data());
+      const currentDate = moment().format('DD/MM/YYYY').split("/").map(date => + date);
+      const userBirthday = user?.age.split("/").map(date => + date);
+      setAge(moment(currentDate.reverse()).diff(moment(userBirthday.reverse()), 'years'));
+    })
+    .catch(err => {
+      console.log('Error getting documents', err);
+    });
+  },[navigation])
+
   const colors = ['tomato', 'thistle', 'skyblue', 'teal'];
 
   const sliderData = [
@@ -26,17 +48,18 @@ export const HomeDetail = ({ navigation }) => {
     },
   ];
 
+  console.log(user);
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.wrapper}>
         <SwiperFlatList
-          index={2}
           showPagination
-          data={sliderData}
+          data={[user?.avatarUrl, user?.primaryUrl, user?.secondaryUrl, user?.tertiaryUrl]}
           style={{ backgroundColor: 'red' }}
           renderItem={({ item }) => (
             <View style={[styles.child]}>
-              <Image source={item.bgUri} style={styles.photo}></Image>
+              <Image source={{uri: item}} style={styles.photo}></Image>
             </View>
           )}
         />
@@ -44,17 +67,17 @@ export const HomeDetail = ({ navigation }) => {
 
       <View style={styles.detail}>
             <View>
-              <Text style={styles.primaryText}>Samanta,27</Text>
+              <Text style={styles.primaryText}>{user?.name}, {age}</Text>
             </View>
 
             <View style={styles.infoWrapper}>
               <Text style={styles.secondaryText}>About me</Text>
-              <Text style={styles.paragraph}>My name is Samanta, I like to draw, travel, looking for a guy for a serious relationship.</Text>
+              <Text style={styles.paragraph}>{user?.desc}</Text>
             </View>
 
             <View style={styles.infoWrapper}>
               <Text style={styles.secondaryText}>Location</Text>
-              <Text style={styles.paragraph}>Palo Alto, CA</Text>
+              <Text style={styles.paragraph}>{user?.address}</Text>
             </View>
 
             <View style={styles.infoWrapper}>

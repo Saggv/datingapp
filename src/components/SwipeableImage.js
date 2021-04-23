@@ -7,7 +7,7 @@ export default function SwipeableImage({ user, swipesRef, navigation }) {
   if (!user) {
     return <Text>Loadding</Text>;
   }
-  const { picture, name, location } = user;
+  console.log(user);
 
   const handleLike = () => {
     swipesRef.current.openRight();
@@ -18,16 +18,17 @@ export default function SwipeableImage({ user, swipesRef, navigation }) {
   };
 
   const openDetail = () =>{
-    navigation.navigate('HomeDetail');
+    console.log(user.id);
+    navigation.navigate('HomeDetail', {id: user._id});
   }
 
   return (
     <View style={styles.slider}>
-      <Image style={styles.image} source={{ uri: picture.large }}></Image>
+      <Image style={styles.image} source={{ uri: user.avatarUrl }}></Image>
 
       <View style={styles.amountImages}>
         <Ionicons name="images" size={20} color="#fff"  onPress={() =>openDetail()} />
-        <Text style={styles.amountImg}>5</Text>
+        <Text style={styles.amountImg}></Text>
       </View>
 
       <View style={styles.footer}>
@@ -36,8 +37,8 @@ export default function SwipeableImage({ user, swipesRef, navigation }) {
         </TouchableOpacity>
 
         <View style={styles.info}>
-          <Text style={styles.name}> {`${name.first} ${name.last}`}</Text>
-          <Text style={styles.job}>{location.country}</Text>
+          <Text style={styles.name}> {user.name}</Text>
+          <Text style={styles.job}>{user.address}</Text>
         </View>
 
         <TouchableOpacity style={styles.button} onPress={handleLike}>
