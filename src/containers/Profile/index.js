@@ -1,17 +1,40 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
+import {useSelector } from 'react-redux'
+import { firestore} from '../../firebase/config';
+import moment from 'moment';
 
 import {logout} from '../App/authSlice';
+import tailwind from 'tailwind-rn';
 
 const ProfileScreen =({ navigation })=> {
   const dispatch = useDispatch();
+  const {id}= useSelector(state => state.auth);
+  const [profile, setProfile] = useState(null);
+  const [age, setAge] = useState(null);
+
+
+  useEffect(()=>{
+   firestore.collection('users').doc(id).get()
+    .then(res => {
+      setProfile(res.data());
+      const currentDate = moment().format('DD/MM/YYYY').split("/").map(date => + date);
+      const userBirthday = profile?.age.split("/").map(date => + date);
+      setAge(moment(currentDate.reverse()).diff(moment(userBirthday.reverse()), 'years'));
+    })
+    .catch(err => {
+      console.log('Error getting documents', err);
+    });
+  },[])
 
   const Logout = () =>{
     dispatch(logout());
      navigation.navigate('Login');
   }
+
+  console.log(age);
 
   return (
     <ScrollView style={styles.container}>
@@ -19,34 +42,43 @@ const ProfileScreen =({ navigation })=> {
         <TouchableOpacity style={styles.button}>
           <Ionicons name="settings" size={25} color="#000" onPress={()=> Logout()} />
         </TouchableOpacity>
-        <Image style={styles.avatar} source={{uri: 'https://picsum.photos/200'}} />
-        <Text style={styles.primaryText}>Natan, 34</Text>
-        <Text style={styles.paragrahpText}>Palo Alto, CA</Text>
+          <View style={[styles.avatar, styles.boxShadow]}>
+             <Image style={[styles.image]} source={{uri: profile?.avatarUrl}} />
+          </View>
+        <Text style={styles.primaryText}>{profile?.name}, {age}</Text>
+        <Text style={styles.paragrahpText}>{profile?.address}</Text>
+        <TouchableOpacity style={tailwind('mt-2')}>
+           <AntDesign name="edit" size={24} color="black" />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.grid}>
-        <View style={styles.gridItemLg}>
-            <Image style={styles.image} source={{uri: 'https://picsum.photos/200'}} />
+        <View style={[styles.gridItemLg]}>
+            <Image style={styles.image} source={{uri: profile?.primaryUrl}} />
         </View>
 
         <View style={styles.gridIems}>
           <View style={styles.gridItem}>
-          <Image style={styles.image} source={{uri: 'https://picsum.photos/200'}} />
+          <Image style={styles.image} source={{uri: profile?.secondaryUrl}} />
           </View>
 
           <View style={styles.gridItem}>
-          <Image style={styles.image} source={{uri: 'https://picsum.photos/200'}} />
+          <Image style={styles.image} source={{uri:profile?.tertiaryUrl}} />
           </View>
         </View>
       </View>
 
       <View style={styles.gridWrap}>
-          <View style={styles.gridWrapItem}>
-          <Image style={styles.image} source={{uri: 'https://picsum.photos/200'}} />
+      <View style={styles.gridWrapItem}>
+              <TouchableOpacity style={styles.addBtn}>
+              <Ionicons name="add" size={25} color="#fff" />
+              </TouchableOpacity>
           </View>
 
           <View style={styles.gridWrapItem}>
-          <Image style={styles.image} source={{uri: 'https://picsum.photos/200'}} />
+              <TouchableOpacity style={styles.addBtn}>
+              <Ionicons name="add" size={25} color="#fff" />
+              </TouchableOpacity>
           </View>
 
           <View style={styles.gridWrapItem}>
@@ -58,7 +90,7 @@ const ProfileScreen =({ navigation })=> {
 
       <View style={styles.about}>
           <Text style={styles.textStrong}>About</Text>
-          <Text style={styles.paragrahpText}>My name is Natan, I’m travaller blogger. I really like my job.</Text>
+          <Text style={styles.paragrahpText}>{profile?.desc}</Text>
       </View>
     </ScrollView>
   );
@@ -81,7 +113,10 @@ const styles = StyleSheet.create({
    resizeMode: 'cover',
    borderRadius: 60,
    marginBottom: 10,
-   marginTop: 16
+   marginTop: 16,
+   borderWidth: 3,
+   borderColor: '#fff',
+   overflow: 'hidden'
  },
  primaryText:{
    fontSize:24,
@@ -153,7 +188,7 @@ marginTop:0,
   alignItems: 'center',
   justifyContent: 'center',
   height: 100,
-  backgroundColor: '#FDAAA3',
+  backgroundColor: '#fee2e2',
 },
 
 about:{
@@ -175,6 +210,18 @@ addBtn: {
   alignItems: 'center',
   justifyContent: 'center',
   shadowColor: "#000",
+},
+
+boxShadow:{
+  shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 12,
+  },
+  shadowOpacity: 0.58,
+  shadowRadius: 16.00,
+  
+  elevation: 24,
 }
 
 });

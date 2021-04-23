@@ -5,6 +5,7 @@ const initState = {
   token: '',
   isLoggedIn: false,
   profile: {},
+  id: ''
 };
 
 const authSlice = createSlice({
@@ -15,6 +16,7 @@ const authSlice = createSlice({
       // const { token, profile } = action.payload;
       // state.token = token;
       state.isLoggedIn = true;
+      state.id = action.payload.id;
       // state.profile = profile.profile;
     },
     logout (state, action) {

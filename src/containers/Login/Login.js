@@ -21,10 +21,15 @@ export const LoginScreen = ({ navigation }) => {
   const Login = async () => {
     try{
       const res = await firebase.auth().signInWithEmailAndPassword(`${phoneNumber}@gmail.com`,password);
+      const payload = {
+        id: res.user.uid,
+        token: res.user.stsTokenManager
+      };
+
       if(!res){
         return  alert('Some thing went wrong!');
       }
-      dispatch(login());
+      dispatch(login(payload));
       return navigation.navigate('Home');
     }catch(err){
       alert('Some thing went wrong!');

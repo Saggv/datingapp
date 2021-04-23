@@ -8,8 +8,6 @@ import MainNavigationProvider from './MainNavigationProvider';
 const AuthLoadingScreen = () => {
   const {isLoggedIn}= useSelector(state => state.auth);
 
-  console.log(isLoggedIn + 'auth');
-
   useEffect(() => {}, [isLoggedIn]);
 
   if(!isLoggedIn){
