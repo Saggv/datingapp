@@ -6,20 +6,32 @@ import { getData } from './thunks';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
 import { Slider } from '@miblanchard/react-native-slider';
 
+import {  firestore } from '../../firebase/config';
+
 import { Ionicons } from '@expo/vector-icons';
 
 import Swipes from '../../components/Swipes';
 
-import { firestore} from '../../firebase/config';
+import { getCurrentUser } from '../App/authSlice';
 
 export const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
+  const {id}= useSelector(state => state.auth);
   const { data } = useSelector((state) => state.home);
   const [users, setUsers] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [gender, setGender] = useState(0);
   const [value, setValue] = useState([ 18, 28]);
   const [visible, setVisible] = useState(false);
+
+  useEffect(()=>{
+    firestore.collection('users').doc(id).get()
+    .then(res => {
+    dispatch(getCurrentUser(res.data()));
+    }).catch((err)=>{
+      console.log(err);
+    })
+  },[id]);
 
   useLayoutEffect(() => {
     navigation.setOptions({

@@ -17,20 +17,23 @@ const authSlice = createSlice({
       // state.token = token;
       state.isLoggedIn = true;
       state.id = action.payload.id;
-      // state.profile = profile.profile;
+      // state.profile = 
     },
     logout (state, action) {
       state = initState;
       AsyncStorage.removeItem('persist: root');
-      console.log(      state.isLoggedIn )
     },
     updateProfile (state, action) {
       const { profile } = action.payload;
       state.profile = profile;
     },
+    getCurrentUser(state, action){
+      console.log(action.payload);
+      state.profile = action.payload
+    }
   },
 });
 
-export const { login, logout, updateProfile } = authSlice.actions;
+export const { login, logout, updateProfile, getCurrentUser } = authSlice.actions;
 
 export default authSlice.reducer;

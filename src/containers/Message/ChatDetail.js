@@ -1,29 +1,95 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { GiftedChat, Actions, Send } from 'react-native-gifted-chat';
 import { Feather } from '@expo/vector-icons'; 
+import {useRoute} from '@react-navigation/native';
+import {useSelector } from 'react-redux'
 
-export const ChatDetail = () => {
+import {firestore} from '../../firebase/config';
+
+export const ChatDetail = ({navigation}) => {
+  const route = useRoute();
+  const {id, profile}= useSelector(state => state.auth);
   const [messages, setMessages] = useState([]);
 
-  useEffect(() => {
-    setMessages([
-      {
-        _id: 1,
-        text: 'Hello developer',
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: 'React Native',
-          avatar: 'https://picsum.photos/200',
-        },
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: (props) => (
+        <Text {...props} style={{ color: '#333', fontWeight: '600', textAlign: 'center', fontSize: 18, marginStart: -50 }}>
+          {route.params.user.name}
+        </Text>
+      ),
+      headerStyle: {
+        height: 50,
+        backgroundColor: '#fff', //Set Header color
+        elevation: 0, // remove shadow on Android
+        shadowOpacity: 0, // remove shadow on iOS
       },
-    ]);
-  }, []);
+      headerTintColor: '#333', //Set Header text color
+      headerTitleStyle: {
+        fontWeight: 'bold', //Set Header text style
+      },
+    });
+  }, [navigation]);
+
+  useEffect(()=>{
+    const messagesListener = firestore.collection('THREADS')
+    .doc(route.params.roomId)
+    .collection('MESSAGES')
+    .orderBy('createdAt', 'desc')
+    .onSnapshot(querySnapshot => {
+      const messages = querySnapshot.docs.map(doc => {
+        const firebaseData = doc.data();
+
+        const data = {
+          _id: doc.id,
+          text: '',
+          createdAt: new Date().getTime(),
+          ...firebaseData
+        };
+
+        if (!firebaseData.system) {
+          data.user = {
+            ...firebaseData.user,
+            name: firebaseData.user.email
+          };
+        }
+
+        return data;
+      });
+
+      setMessages(messages);
+    });
+
+  return () => messagesListener();
+  },[])
 
   const onSendM = useCallback((messages = []) => {
+    firestore.collection('THREADS')
+    .doc(route.params.roomId)
+    .collection('MESSAGES')
+    .add({
+      text: messages[0].text,
+      createdAt: new Date().getTime(),
+      user: {
+        _id: id,
+        avatar: profile.avatarUrl
+      }
+    });
+
+     firestore.collection('THREADS')
+    .doc(route.params.roomId)
+    .set(
+      {
+        latestMessage: {
+          text:messages[0].text,
+          createdAt: new Date().getTime()
+        }
+      },
+      { merge: true }
+    );
     setMessages((previousMessages) => GiftedChat.append(previousMessages, messages));
   }, []);
 
@@ -32,7 +98,7 @@ export const ChatDetail = () => {
       <Actions
         {...props}
         options={{
-          ['Send Image']: console.log('dddd'),
+          // ['Send Image']: console.log('dddd'),
         }}
         icon={() => <Feather name="more-vertical" size={24} color="black" />}
       />
@@ -53,8 +119,7 @@ export const ChatDetail = () => {
   <Ionicons name={'send'} size={28} color='#FF8F86' />
   </Send>
    )
- }
-
+ };
 
   return (
     <View style={styles.container}>
@@ -64,7 +129,7 @@ export const ChatDetail = () => {
         renderSend={renderSend}
         onSend={messages => onSendM(messages)}
         user={{
-          _id: 1,
+          _id: id,
         }}
       />
     </View>

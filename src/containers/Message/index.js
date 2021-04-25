@@ -1,13 +1,59 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, FlatList } from 'react-native';
+import {useSelector } from 'react-redux'
+import {firestore} from '../../firebase/config';
 
 import { ChatItem, Search } from '../../components';
 
 const MessageScreen = ({ navigation }) => {
+  const [threads, setThreads] = useState([]);
+  const {id}= useSelector(state => state.auth);
+
+  useEffect( async()=>{
+    const listRooms = [];
+    const result =[];
+    const resThreads = await firestore.collection('THREADS').get();
+
+    await resThreads.forEach((docs) =>{
+      listRooms.push({...docs.data(), id: docs.id});
+    });
+
+    listRooms.forEach(room =>{
+      if(room.targetId === id || room.fromId === id){
+        return result.push(room);
+      }
+    });
+
+    setThreads(result);
+
+  //   const unsubscribe = firestore.collection('THREADS')
+  //   .onSnapshot(querySnapshot => {
+  //     const threads = querySnapshot.docs.map(documentSnapshot => {
+  //       return {
+  //         _id: documentSnapshot.id,
+  //         // give defaults
+  //         name: '',
+  //         ...documentSnapshot.data()
+  //       };
+  //     });
+
+  //     setThreads(threads);
+  //   });
+
+  // /**
+  //  * unsubscribe listener
+  //  */
+  // return () => unsubscribe();
+
+  return () => resThreads();
+  },[]);
+
+  console.log(threads);
+
   return (
     <View style={styles.container}>
       <FlatList
-        data={[1, 2, 3, 4, 5, 6]}
+        data={threads}
         contentContainerStyle={styles.wrapper}
         ListHeaderComponent={
           <View style={styles.header}>
@@ -15,9 +61,9 @@ const MessageScreen = ({ navigation }) => {
             <Search />
             </View>
 
-            <ScrollView style={styles.scrollView} horizontal={true} showsHorizontalScrollIndicator={false}>
+            <ScrollView style={[styles.scrollView, {backgroundColor: '#fff'}]} horizontal={true} showsHorizontalScrollIndicator={false}>
               {[1, 2, 3, 4, 9, 5, 6].map((user) => (
-                <View style={styles.user} key={user}>
+                <View style={[styles.user, styles.boxShadow]} key={user}>
                   <Image style={styles.userPhoto} source={{ uri: 'https://picsum.photos/200' }} />
                 </View>
               ))}
@@ -25,7 +71,7 @@ const MessageScreen = ({ navigation }) => {
           </View>
         }
         renderItem={({ item }) => (
-            <ChatItem navigation={navigation} />
+            <ChatItem navigation={navigation} item={item} />
         )}
         keyExtractor={(item) => item}
       />
@@ -36,7 +82,7 @@ const MessageScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#fff',
   },
 
   header: {
@@ -60,6 +106,16 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     overflow: 'hidden',
     marginHorizontal: 5,
+    borderWidth: 2,
+    borderColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: {
+    width: 0,
+    height: 0,
+    },
+    shadowOpacity: 0.58,
+
+    elevation: 5,
   },
 
   userPhoto: {
@@ -71,6 +127,17 @@ const styles = StyleSheet.create({
 
   wrapper: {
     backgroundColor: '#fff',
+  },
+
+  boxShadow:{
+    // shadowColor: "#000",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 12,
+    // },
+    // shadowOpacity: 0.58,
+    
+    // elevation: 24,
   },
 });
 

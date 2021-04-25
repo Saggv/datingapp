@@ -4,9 +4,9 @@ import { useDispatch } from 'react-redux';
 import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, TextInput } from 'react-native';
 import PhoneInput from 'react-native-phone-number-input';
 
-import { firebase } from '../../firebase/config';
+import { firebase, firestore } from '../../firebase/config';
 
-import { login } from '../App/authSlice';
+import { login, getCurrentUser } from '../App/authSlice';
 
 // import others
 import tailwind from 'tailwind-rn';
@@ -32,6 +32,7 @@ export const LoginScreen = ({ navigation }) => {
       dispatch(login(payload));
       return navigation.navigate('Home');
     }catch(err){
+      console.log(err);
       alert('Some thing went wrong!');
     }
   };

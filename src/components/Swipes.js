@@ -7,8 +7,6 @@ import { RectButton } from 'react-native-gesture-handler';
 export default function Swipes({ users, currentIndex, handleLike, handlePass, navigation }) {
   const ref = useRef(null);
 
-  console.log(users);
-
   const [willLike, setWillLike] = useState(false);
   const [willPass, setWillPass] = useState(false);
   const renderLeftActions = () => {

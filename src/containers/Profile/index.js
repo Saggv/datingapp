@@ -21,8 +21,8 @@ const ProfileScreen =({ navigation })=> {
     .then(res => {
       setProfile(res.data());
       const currentDate = moment().format('DD/MM/YYYY').split("/").map(date => + date);
-      const userBirthday = profile?.age.split("/").map(date => + date);
-      setAge(moment(currentDate.reverse()).diff(moment(userBirthday.reverse()), 'years'));
+      const userBirthday = profile?.age.split("/").map(date => + date) | [];
+      setAge(moment(currentDate.reverse()).diff(moment(userBirthday?.reverse()), 'years'));
     })
     .catch(err => {
       console.log('Error getting documents', err);

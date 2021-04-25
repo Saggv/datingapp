@@ -1,21 +1,33 @@
 import React from 'react';
 import { Text, View, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import {useSelector } from 'react-redux';
+import moment from 'moment';
 
-export const ChatItem = ({ navigation })  => {
+export const ChatItem = ({ navigation, item })  => {
+  const {id}= useSelector(state => state.auth);
+
+  const checkUser=(item)=>{
+    if(item.targetId === id){
+        return {name: item.fromName, avatarUrl: item.fromAvatar};
+    }else{
+      return {name: item.targetName, avatarUrl: item.targetAvatar};
+    }
+  };
+
   return (
-    <TouchableOpacity style={styles.container} onPress={()=>navigation.navigate('ChatDetail')}>
-      <TouchableOpacity style={styles.chatItemPhoto}>
-        <Image style={styles.photo} source={{ uri: 'https://picsum.photos/200' }} />
+    <TouchableOpacity style={styles.container} onPress={()=>navigation.navigate('ChatDetail', {roomId: item?.id, user: checkUser(item)})}>
+      <TouchableOpacity style={[styles.chatItemPhoto, styles.boxShadow]}>
+        <Image style={styles.photo} source={{ uri: checkUser(item).avatarUrl }} />
       </TouchableOpacity>
 
       <View style={styles.chatContent}>
         <View style={styles.chatText}>
-          <Text style={styles.textHeader}>Rose</Text>
-          <Text style={styles.paragraph}>Would you like to go to the...</Text>
+          <Text style={styles.textHeader}>{checkUser(item).name}</Text>
+          <Text style={styles.paragraph}>{item?.latestMessage?.text}</Text>
         </View>
 
         <View style={styles.chatDetail}>
-          <Text style={styles.smallText}>21:16</Text>
+          <Text style={styles.smallText}>{moment(item?.latestMessage?.createdAt).valueOf()}</Text>
           <Text style={styles.unread}>2</Text>
         </View>
       </View>
@@ -34,9 +46,11 @@ const styles = StyleSheet.create({
   },
 
   chatItemPhoto: {
-    width: 70,
-    height: 70,
+    width: 55,
+    height: 55,
     borderRadius: 50,
+    borderWidth: 2,
+    borderColor: "#fff",
   },
 
   photo:{
@@ -86,5 +100,17 @@ const styles = StyleSheet.create({
     height: 20,
     textAlign: 'center',
     marginTop: 5,
+  },
+
+  boxShadow:{
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.58,
+    shadowRadius: 16.00,
+    
+    elevation: 6,
   },
 });

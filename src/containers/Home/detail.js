@@ -1,62 +1,108 @@
-import React, {useEffect, useState} from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView, Image } from 'react-native';
+import React, {useEffect, useState, Fragment} from 'react';
+import { View, Text, StyleSheet, Dimensions, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { SwiperFlatList } from 'react-native-swiper-flatlist';
 import {useRoute} from '@react-navigation/native';
 import moment from 'moment';
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import {useSelector } from 'react-redux'
 
 import {firestore} from '../../firebase/config';
 
 export const HomeDetail = ({ navigation }) => {
+  const {id}= useSelector(state => state.auth);
   const [user, setUser] = useState();
   const [age, setAge] = useState();
   const route = useRoute();
-  console.log(route.params.id);
+  const [currentUser, setCurrentUser] = useState();
 
   useEffect(()=>{
     firestore.collection('users').doc(route.params.id).get()
     .then(res => {
-      setUser(res.data());
-      const currentDate = moment().format('DD/MM/YYYY').split("/").map(date => + date);
-      const userBirthday = user?.age.split("/").map(date => + date);
-      setAge(moment(currentDate.reverse()).diff(moment(userBirthday.reverse()), 'years'));
+      setUser({...res.data(), id: res.id});
     })
     .catch(err => {
       console.log('Error getting documents', err);
     });
-  },[navigation])
 
-  const colors = ['tomato', 'thistle', 'skyblue', 'teal'];
+    firestore.collection('users').doc(id).get()
+    .then(res => {
+      setCurrentUser({...res.data(), id: res.id});
+    })
+    .catch(err => {
+      console.log('Error getting documents', err);
+    });
+  },[navigation]);
 
-  const sliderData = [
-    {
-      index: 1,
-      text: 'The huge base of users',
-      bgUri: require('../Tutorial/images/tutorial-bg-1.png'),
-      btnText: 'Next',
-    },
-    {
-      index: 2,
-      text: 'Choose a preferable browsing mode',
-      bgUri: require('../Tutorial/images/tutorial-bg-2.png'),
-      btnText: 'Next',
-    },
-    {
-      index: 3,
-      text: 'See who liked you',
-      bgUri: require('../Tutorial/images/tutorial-bg-3.png'),
-      btnText: 'Start',
-    },
-  ];
+  useEffect(()=>{
+    const currentDate = moment().format('DD/MM/YYYY').split("/").map(date => + date);
+    const userBirthday = user?.age.split("/").map(date => + date) || [];
+    setAge(moment(currentDate?.reverse()).diff(moment(userBirthday.reverse()), 'years'));
+  },[user]);
 
-  console.log(user);
+  const createChatRoom = async() =>{
+    const listRooms = [];
+    const resThreads = await firestore.collection('THREADS').get();
+    if(resThreads.empty){
+      firestore.collection('THREADS').add({
+        targetId: user.id,
+        fromId: id,
+        targetAvatar: user.avatarUrl,
+        targetName: user.name,
+        fromAvatar: currentUser.avatarUrl,
+        fromName: currentUser.name
+      }).then(res =>{
+        return  navigation.navigate('ChatDetail', {roomId: res.id, user});
+      });
+    };
+
+    await resThreads.forEach((docs) =>{
+      listRooms.push({...docs.data(), id: docs.id});
+    });
+    console.log(user.id, id);
+    listRooms.every((item)=>{
+      if((item.targetId === user.id && item.fromId === id) || (item.targetId === id && item.fromId === user.id)){
+            return  navigation.navigate('ChatDetail', {roomId: item.id, user:{avatarUrl: item.targetAvatar}});
+      }else{
+        console.log('new');
+        firestore.collection('THREADS').add({
+          targetId: user.id,
+          fromId: id,
+          targetAvatar: user.avatarUrl,
+          targetName: user.name,
+          fromAvatar: currentUser.avatarUrl,
+          fromName: currentUser.name
+        }).then(res =>{
+          return  navigation.navigate('ChatDetail', {roomId: res.id, user});
+        });
+      }
+    })
+
+    // firestore.collection('THREADS').where("targetId", "==", user.id).where("fromId", "==", id).where("targetId", "==", id).where("fromId", "==", user.id).get().then(res =>{
+    //   let roomId;
+    //     if(res.empty){
+    //       firestore.collection('THREADS').add({
+    //         targetId: user.id,
+    //         fromId: id
+    //       }).then(res =>{
+    //         roomId = res.id;
+    //         return  navigation.navigate('ChatDetail', {roomId, user});
+    //       })
+    //     }else{
+    //       res.forEach((docs) =>{
+    //         roomId = docs.id;
+    //         return  navigation.navigate('ChatDetail', {roomId, user});
+    //      });
+    //     }
+    // })
+  }
 
   return (
+    <Fragment>
     <ScrollView style={styles.container}>
       <View style={styles.wrapper}>
         <SwiperFlatList
           showPagination
           data={[user?.avatarUrl, user?.primaryUrl, user?.secondaryUrl, user?.tertiaryUrl]}
-          style={{ backgroundColor: 'red' }}
           renderItem={({ item }) => (
             <View style={[styles.child]}>
               <Image source={{uri: item}} style={styles.photo}></Image>
@@ -86,6 +132,10 @@ export const HomeDetail = ({ navigation }) => {
             </View>
       </View>
     </ScrollView>
+          <TouchableOpacity style={styles.fabButton} onPress={() => createChatRoom()}>
+          <MaterialCommunityIcons name="telegram" size={24} color="#FCA5A5" />
+        </TouchableOpacity>
+        </Fragment>
   );
 };
 
@@ -126,7 +176,7 @@ const styles = StyleSheet.create({
   },
 
   primaryText:{
-    fontSize: 30,
+    fontSize: 23,
     marginTop: 15,
     marginBottom: 5,
     fontWeight: '600',
@@ -141,5 +191,26 @@ const styles = StyleSheet.create({
 
   paragraph:{
     color: '#555'
+  },
+
+  fabButton: {
+    bottom: 30,
+    right: 20,
+    position: 'absolute',
+    padding: 10,
+    backgroundColor: '#fff',
+    width: 48,
+    height:48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   }
 });

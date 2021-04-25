@@ -1,13 +1,15 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 const { width, height } = Dimensions.get('window');
 import { Ionicons } from '@expo/vector-icons';
 
-export default function SwipeableImage({ user, swipesRef, navigation }) {
+export default function SwipeableImage({ user, swipesRef }) {
+  const navigation = useNavigation(); 
+
   if (!user) {
     return <Text>Loadding</Text>;
   }
-  console.log(user);
 
   const handleLike = () => {
     swipesRef.current.openRight();
@@ -18,7 +20,6 @@ export default function SwipeableImage({ user, swipesRef, navigation }) {
   };
 
   const openDetail = () =>{
-    console.log(user.id);
     navigation.navigate('HomeDetail', {id: user._id});
   }
 
