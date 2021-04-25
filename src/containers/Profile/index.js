@@ -21,7 +21,8 @@ const ProfileScreen =({ navigation })=> {
     .then(res => {
       setProfile(res.data());
       const currentDate = moment().format('DD/MM/YYYY').split("/").map(date => + date);
-      const userBirthday = profile?.age.split("/").map(date => + date) | [];
+      const userBirthday = profile?.age.split("/").map(date => + date) || ['2000', '10', '6'];
+      console.log(profile.age);
       setAge(moment(currentDate.reverse()).diff(moment(userBirthday?.reverse()), 'years'));
     })
     .catch(err => {
@@ -33,8 +34,6 @@ const ProfileScreen =({ navigation })=> {
     dispatch(logout());
      navigation.navigate('Login');
   }
-
-  console.log(age);
 
   return (
     <ScrollView style={styles.container}>

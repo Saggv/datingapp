@@ -4,21 +4,21 @@ import { Ionicons } from '@expo/vector-icons';
 
 const {width} = Dimensions.get('window');
 
-export default function LikeThumbnail() {
+export default function LikeThumbnail({data}) {
   return (
     <View style={styles.container}>
-      <Image style={styles.photo} source={{ uri: 'https://picsum.photos/200' }} />
+      <Image style={styles.photo} source={{ uri:data.img}} />
 
       <View style={styles.info}>
-        <Text style={styles.secondaryText}>Samanta</Text>
+        <Text style={styles.secondaryText}>{data.name}</Text>
 
         <View style={styles.action}>
           <TouchableOpacity style={styles.button}>
-            <Ionicons name="close-outline" size={32} color="#000" />
+            <Ionicons name="close-outline" size={25} color="#000" />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button}>
-            <Ionicons name="heart" size={32} color="#fdaaa3" />
+            <Ionicons name="heart" size={25} color="#fdaaa3" />
           </TouchableOpacity>
         </View>
       </View>
@@ -30,21 +30,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     height: 200,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
+    shadowOpacity: 0.20,
+    shadowRadius: 1.41,
+    
+    elevation: 2,
     borderRadius: 10,
     overflow: 'hidden',
     position: 'relative',
   },
 
   secondaryText: {
-    fontSize: 24,
+    fontSize: 18,
     textAlign :'center',
     color: '#fff'
   },
@@ -72,8 +73,8 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     borderRadius: 50,
     flexDirection: 'row',
     backgroundColor: '#fff',

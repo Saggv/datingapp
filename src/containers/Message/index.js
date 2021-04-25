@@ -5,76 +5,87 @@ import {firestore} from '../../firebase/config';
 
 import { ChatItem, Search } from '../../components';
 
+import tailwind from 'tailwind-rn';
+
 const MessageScreen = ({ navigation }) => {
   const [threads, setThreads] = useState([]);
   const {id}= useSelector(state => state.auth);
 
-  useEffect( async()=>{
-    const listRooms = [];
-    const result =[];
-    const resThreads = await firestore.collection('THREADS').get();
-
-    await resThreads.forEach((docs) =>{
-      listRooms.push({...docs.data(), id: docs.id});
-    });
-
-    listRooms.forEach(room =>{
-      if(room.targetId === id || room.fromId === id){
-        return result.push(room);
-      }
-    });
-
-    setThreads(result);
-
-  //   const unsubscribe = firestore.collection('THREADS')
-  //   .onSnapshot(querySnapshot => {
-  //     const threads = querySnapshot.docs.map(documentSnapshot => {
-  //       return {
-  //         _id: documentSnapshot.id,
-  //         // give defaults
-  //         name: '',
-  //         ...documentSnapshot.data()
-  //       };
-  //     });
-
-  //     setThreads(threads);
-  //   });
-
-  // /**
-  //  * unsubscribe listener
-  //  */
-  // return () => unsubscribe();
-
-  return () => resThreads();
+  useEffect( ()=>{
+      (async()=>{
+        const listRooms = [];
+        const result =[];
+        const resThreads = await firestore.collection('THREADS').get();
+    
+        await resThreads.forEach((docs) =>{
+          listRooms.push({...docs.data(), id: docs.id});
+        });
+    
+        listRooms.forEach(room =>{
+          if(room.targetId === id || room.fromId === id){
+            return result.push(room);
+          }
+        });
+    
+        setThreads(result);
+      return () => resThreads();
+      })();
   },[]);
 
-  console.log(threads);
+  const userData = [
+      'https://i.pinimg.com/originals/f6/a8/e9/f6a8e92bd71a9d8ea41a6adca0fab8f5.jpg',
+      'https://i.pinimg.com/564x/b1/ff/98/b1ff98ccc4d4c6a7bb1d645edb28f2d8.jpg',
+      'https://i.pinimg.com/564x/26/7b/f3/267bf38a72c2c3bb0efb29790b267df9.jpg',
+      'https://i.pinimg.com/564x/b0/27/b2/b027b21c10d2a12f4b570d11257b66ef.jpg',
+      'https://i.pinimg.com/564x/3f/de/4a/3fde4acb0a9cb680d16d62ca51e5ec36.jpg',
+      'https://i.pinimg.com/564x/c9/d1/be/c9d1be341601c6ccef5fc04411077a15.jpg',
+  ]
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={threads}
-        contentContainerStyle={styles.wrapper}
-        ListHeaderComponent={
+            {
+        threads.length < 1 ? (
           <View style={styles.header}>
-            <View style={{paddingHorizontal: 8}}>
-            <Search />
-            </View>
-
-            <ScrollView style={[styles.scrollView, {backgroundColor: '#fff'}]} horizontal={true} showsHorizontalScrollIndicator={false}>
-              {[1, 2, 3, 4, 9, 5, 6].map((user) => (
-                <View style={[styles.user, styles.boxShadow]} key={user}>
-                  <Image style={styles.userPhoto} source={{ uri: 'https://picsum.photos/200' }} />
-                </View>
-              ))}
-            </ScrollView>
+          <View style={{paddingHorizontal: 8}}>
+          <Search />
           </View>
-        }
-        renderItem={({ item }) => (
-            <ChatItem navigation={navigation} item={item} />
-        )}
-        keyExtractor={(item) => item}
-      />
+
+          <Text style={tailwind('text-center mt-4 mb-2')}>You haven't had any chat yet!</Text>
+
+          <ScrollView style={[styles.scrollView, {backgroundColor: '#fff'}]} horizontal={true} showsHorizontalScrollIndicator={false}>
+            {userData.map((img) => (
+              <View style={[styles.user, styles.boxShadow]} key={img}>
+                <Image style={styles.userPhoto} source={{ uri: img }} />
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+        ):(
+          <FlatList
+          data={threads}
+          contentContainerStyle={styles.wrapper}
+          ListHeaderComponent={
+            <View style={styles.header}>
+              <View style={{paddingHorizontal: 8}}>
+              <Search />
+              </View>
+  
+              <ScrollView style={[styles.scrollView, {backgroundColor: '#fff'}]} horizontal={true} showsHorizontalScrollIndicator={false}>
+                {userData.map((img) => (
+                  <View style={[styles.user, styles.boxShadow]} key={img}>
+                    <Image style={styles.userPhoto} source={{ uri: img }} />
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          }
+          renderItem={({ item }) => (
+              <ChatItem navigation={navigation} item={item} />
+          )}
+          keyExtractor={(item) => item}
+        />
+        )
+      }
     </View>
   );
 };

@@ -39,18 +39,16 @@ const EditProfileScreen = ({ navigation }) => {
 
     let result;
 
-    if (isEvenNumber !== 0) {
+    if (isEvenNumber) {
       result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
-        aspect: [1, 1],
         quality: 1,
       });
     } else {
       result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
-        aspect: [1, 1],
         quality: 1,
       });
     }

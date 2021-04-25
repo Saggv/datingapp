@@ -12,11 +12,42 @@ const LikeScreen = ({ navigation }) => {
     navigation.setOptions({headerShown: false});
   }, [navigation]);
 
+  const data = [
+    {
+      img: 'https://i.pinimg.com/564x/a8/8e/53/a88e53d61f9a1a897f26b8ff07798782.jpg',
+      name: 'Jobh Calhm'
+    },
+    {
+      img: 'https://i.pinimg.com/564x/df/b8/dc/dfb8dcfd22bcff55e21f18bc9be49cce.jpg',
+      name: 'Jobh Calhm'
+    },
+    {
+      img: 'https://i.pinimg.com/564x/5d/41/3a/5d413a20291d92dc59d7b0ade3cef8c6.jpg',
+      name: 'Jobh Calhm'
+    },
+    {
+      img: 'https://i.pinimg.com/564x/91/f9/0d/91f90dc6be664e07fda91343e1bfb416.jpg',
+      name: 'Jobh Calhm'
+    },
+    {
+      img: 'https://i.pinimg.com/564x/5e/63/f7/5e63f7256b6696ed70efbc6302383fd1.jpg',
+      name: 'Jobh Calhm'
+    },
+    {
+      img: 'https://i.pinimg.com/564x/ce/f8/e3/cef8e379f327b9f63d21e8f0515e0486.jpg',
+      name: 'Jobh Calhm'
+    },
+    {
+      img: 'https://i.pinimg.com/564x/1f/37/98/1f37982d186cc95b42735da28bc4fbea.jpg',
+      name: 'Jobh Calhm'
+    }
+  ]
+
 
   const likes = [1, 2, 3, 4, 5, 6, 7];
   return (
       <FlatList
-        data={likes}
+        data={data}
         numColumns={2}
         contentContainerStyle={styles.container}
         ListHeaderComponent={
@@ -27,10 +58,10 @@ const LikeScreen = ({ navigation }) => {
         }
         renderItem={({ item }) => (
           <View style={styles.wrapper}>
-            <LikeThumbnail />
+            <LikeThumbnail data={item} />
           </View>
         )}
-        keyExtractor={item => item}
+        keyExtractor={item => item.img}
       />
   );
 };
