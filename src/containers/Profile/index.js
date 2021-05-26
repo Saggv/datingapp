@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useLayoutEffect} from 'react';
 import { useDispatch } from 'react-redux'
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons, AntDesign } from '@expo/vector-icons';
 import {useSelector } from 'react-redux'
 import { firestore} from '../../firebase/config';
 import moment from 'moment';
+import { SETTING_SCREEN } from '../../constants/StackNavigation';
 
 import {logout} from '../App/authSlice';
 import tailwind from 'tailwind-rn';
@@ -14,6 +15,10 @@ const ProfileScreen =({ navigation })=> {
   const {id}= useSelector(state => state.auth);
   const [profile, setProfile] = useState(null);
   const [age, setAge] = useState(null);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({headerShown: false});
+  }, [navigation]);
 
 
   useEffect(()=>{
@@ -30,16 +35,11 @@ const ProfileScreen =({ navigation })=> {
     });
   },[]);
 
-  const Logout = () =>{
-    dispatch(logout());
-     navigation.navigate('Login');
-  }
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.button}>
-          <Ionicons name="settings" size={25} color="#000" onPress={()=> Logout()} />
+          <Ionicons name="settings" size={25} color="#333" onPress={()=> navigation.navigate(SETTING_SCREEN)} />
         </TouchableOpacity>
           <View style={[styles.avatar, styles.boxShadow]}>
              <Image style={[styles.image]} source={{uri: profile?.avatarUrl}} />

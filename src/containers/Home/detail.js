@@ -42,6 +42,7 @@ export const HomeDetail = ({ navigation }) => {
   const createChatRoom = async() =>{
     const listRooms = [];
     const resThreads = await firestore.collection('THREADS').get();
+
     if(resThreads.empty){
       firestore.collection('THREADS').add({
         targetId: user.id,

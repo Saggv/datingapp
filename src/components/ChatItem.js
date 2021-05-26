@@ -27,7 +27,7 @@ export const ChatItem = ({ navigation, item })  => {
         </View>
 
         <View style={styles.chatDetail}>
-          <Text style={styles.smallText}>{moment(item?.latestMessage?.createdAt).valueOf()}</Text>
+          <Text style={styles.smallText}>{moment(item?.latestMessage?.createdAt).startOf("minute").fromNow(true)}</Text>
           <Text style={styles.unread}>2</Text>
         </View>
       </View>

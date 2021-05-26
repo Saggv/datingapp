@@ -9,6 +9,7 @@ export const HOME_SCREEN = 'Home';
 export const LIKE_SCREEN = 'Like';
 export const MESSAGE_SCREEN = 'Message';
 export const PROFILE_SCREEN = 'Profile';
+export const SETTING_SCREEN = 'Setting';
 
 // SignUpScreen
 export const TUTORIAL = 'Tutorial';

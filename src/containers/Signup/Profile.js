@@ -16,6 +16,7 @@ const EditProfileScreen = ({ navigation }) => {
   const [tertiaryImage, setTertiaryImage] = useState(null);
   const [desc, setDesc] = useState(null);
   const [age, setAge] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const currentDate = moment().format('DD/MM/YYYY').split("/").map(date => + date);
@@ -39,19 +40,19 @@ const EditProfileScreen = ({ navigation }) => {
 
     let result;
 
-    if (isEvenNumber) {
+    // if (isEvenNumber) {
       result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
         quality: 1,
       });
-    } else {
-      result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        allowsEditing: true,
-        quality: 1,
-      });
-    }
+    // } else {
+    //   result = await ImagePicker.launchCameraAsync({
+    //     mediaTypes: ImagePicker.MediaTypeOptions.All,
+    //     allowsEditing: true,
+    //     quality: 1,
+    //   });
+    // }
 
     if (!result.cancelled) {
       setAvatar(result.uri);
@@ -66,6 +67,7 @@ const EditProfileScreen = ({ navigation }) => {
   }
 
   const onSubmit = async() =>{
+    setIsLoading(true);
     const avatarUrl = await getUploadURL(avatar, 'avatar');
     const primaryUrl = await getUploadURL(primaryImage, 'primary_image');
     const secondaryUrl = await getUploadURL(secondaryImage, 'secondary_image');
@@ -88,6 +90,8 @@ const EditProfileScreen = ({ navigation }) => {
       secondaryUrl,
       tertiaryUrl
     });
+
+    setIsLoading(false);
 
     alert('Update your profile success!');
 
@@ -136,8 +140,8 @@ const EditProfileScreen = ({ navigation }) => {
       </View>
 
       <View style={tailwind('px-10')}>
-          <TouchableOpacity style={tailwind('py-2 bg-red-300 rounded-xl text-center mt-4 mb-4')} onPress={onSubmit}>
-            <Text style={tailwind('text-center text-white text-lg')}>Next</Text>
+          <TouchableOpacity style={isLoading ? tailwind('py-2 bg-red-50 rounded-xl text-center mt-4 mb-4') : tailwind('py-2 bg-red-300 rounded-xl text-center mt-4 mb-4')} onPress={onSubmit}>
+            <Text style={tailwind('text-center text-white text-lg')}>{isLoading ? 'Loading' : 'Nex'}</Text>
           </TouchableOpacity>
         </View>
     </ScrollView>
