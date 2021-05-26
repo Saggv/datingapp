@@ -12,6 +12,7 @@ import {firestore} from '../../firebase/config';
 export const ChatDetail = ({navigation}) => {
   const route = useRoute();
   const {id, profile}= useSelector(state => state.auth);
+  const [pushToken, setPushToken] = useState();
   const [messages, setMessages] = useState([]);
 
   useLayoutEffect(() => {
@@ -35,6 +36,8 @@ export const ChatDetail = ({navigation}) => {
   }, [navigation]);
 
   useEffect(()=>{
+    getNotificationToken();
+
     const messagesListener = firestore.collection('THREADS')
     .doc(route.params.roomId)
     .collection('MESSAGES')
@@ -64,7 +67,36 @@ export const ChatDetail = ({navigation}) => {
     });
 
   return () => messagesListener();
-  },[])
+  },[]);
+
+const  getNotificationToken = async() =>{
+  const room = await firestore.collection('THREADS').doc(route.params.roomId).get();
+  const {fromId, targetId} = room.data();
+
+  if(id === fromId){
+    const user = await firestore.collection('users').doc(targetId).get();
+    setPushToken(user.data()?.push_token);
+    return;
+  }
+  const user = await firestore.collection('users').doc(fromId).get();
+  setPushToken(user.data()?.push_token);
+};
+
+const sendNotification = async(message) =>{
+  const res = await fetch("https://exp.host/--/api/v2/push/send", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body:JSON.stringify({
+      to: pushToken,
+      sound: "default",
+      title: profile.name,
+      body: message
+    })
+  });
+}
 
   const onSendM = useCallback((messages = []) => {
     firestore.collection('THREADS')
@@ -91,6 +123,7 @@ export const ChatDetail = ({navigation}) => {
       { merge: true }
     );
     setMessages((previousMessages) => GiftedChat.append(previousMessages, messages));
+    sendNotification(messages[0].text);
   }, []);
 
   function renderActions(props) {
@@ -120,7 +153,6 @@ export const ChatDetail = ({navigation}) => {
   </Send>
    )
  };
-
   return (
     <View style={styles.container}>
       <GiftedChat

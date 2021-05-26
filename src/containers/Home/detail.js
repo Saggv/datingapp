@@ -50,7 +50,7 @@ export const HomeDetail = ({ navigation }) => {
         targetAvatar: user.avatarUrl,
         targetName: user.name,
         fromAvatar: currentUser.avatarUrl,
-        fromName: currentUser.name
+        fromName: currentUser.name,
       }).then(res =>{
         return  navigation.navigate('ChatDetail', {roomId: res.id, user});
       });
@@ -62,7 +62,7 @@ export const HomeDetail = ({ navigation }) => {
     console.log(user.id, id);
     listRooms.every((item)=>{
       if((item.targetId === user.id && item.fromId === id) || (item.targetId === id && item.fromId === user.id)){
-            return  navigation.navigate('ChatDetail', {roomId: item.id, user:{avatarUrl: item.targetAvatar}});
+            return  navigation.navigate('ChatDetail', {roomId: item.id, user:{...user, avatarUrl: item.targetAvatar}});
       }else{
         console.log('new');
         firestore.collection('THREADS').add({

@@ -28,7 +28,7 @@ const authSlice = createSlice({
       state.profile = profile;
     },
     getCurrentUser(state, action){
-      console.log(action.payload);
+      // console.log(action.payload);
       state.profile = action.payload
     }
   },

@@ -7,6 +7,7 @@ export const ChatItem = ({ navigation, item })  => {
   const {id}= useSelector(state => state.auth);
 
   const checkUser=(item)=>{
+    console.log(item);
     if(item.targetId === id){
         return {name: item.fromName, avatarUrl: item.fromAvatar};
     }else{
