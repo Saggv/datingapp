@@ -1,35 +1,41 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Modal, TextInput } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Modal, TextInput, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { getData } from './thunks';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import * as firebase from 'firebase';
 
 import SegmentedControlTab from 'react-native-segmented-control-tab';
 import { Slider } from '@miblanchard/react-native-slider';
-import {  firestore } from '../../firebase/config';
+import { firestore } from '../../firebase/config';
 import { Ionicons } from '@expo/vector-icons';
 import Swipes from '../../components/Swipes';
 import { getCurrentUser } from '../App/authSlice';
 
 export const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const {id, profile}= useSelector(state => state.auth);
+  const { id, profile } = useSelector((state) => state.auth);
   const { data } = useSelector((state) => state.home);
   const [users, setUsers] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [gender, setGender] = useState(0);
-  const [value, setValue] = useState([ 18, 28]);
+  const [ages, setAges] = useState([18, 28]);
   const [visible, setVisible] = useState(false);
+  const [location, setLocation] = useState('');
 
-  useEffect(()=>{
-    firestore.collection('users').doc(id).get()
-    .then(res => {
-    dispatch(getCurrentUser(res.data()));
-    }).catch((err)=>{
-      console.log(err);
-    })
-  },[id]);
+  useEffect(() => {
+    firestore
+      .collection('users')
+      .doc(id)
+      .get()
+      .then((res) => {
+        dispatch(getCurrentUser(res.data()));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [id]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -49,7 +55,7 @@ export const HomeScreen = ({ navigation }) => {
         fontWeight: 'bold', //Set Header text style
       },
       headerLeft: () => (
-        <TouchableOpacity onPress={() => alert('This funcion is comming soon :))')} style={{ marginLeft: 10 }}>
+        <TouchableOpacity onPress={() => getAllUsers()} style={{ marginLeft: 10 }}>
           <Ionicons name="md-reload-outline" size={20} color="#333" />
         </TouchableOpacity>
       ),
@@ -61,31 +67,30 @@ export const HomeScreen = ({ navigation }) => {
     });
   }, [navigation]);
 
-  useEffect(() =>{
-    const unsubscribe = firestore.collection('users')
-    .onSnapshot(querySnapshot => {
-      const users = querySnapshot.docs.map(documentSnapshot => {
+  const getAllUsers = () => {
+    setCurrentIndex(0);
+    firestore.collection('users').onSnapshot((querySnapshot) => {
+      const users = querySnapshot.docs.map((documentSnapshot) => {
         return {
           _id: documentSnapshot.id,
-          ...documentSnapshot.data()
+          ...documentSnapshot.data(),
         };
       });
-
       setUsers(users);
     });
-   return () => unsubscribe();
+  };
+
+  useEffect(() => {
+    getAllUsers();
   }, []);
 
-  useEffect(() =>{
-  registerForPushNotificationsAsync().then(token =>{
-    firestore
-    .collection('users')
-    .doc(id)
-    .update({
-      push_token: token,
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) => {
+      firestore.collection('users').doc(id).update({
+        push_token: token,
+      });
     });
-  })
-  },[]);
+  }, []);
 
   async function registerForPushNotificationsAsync() {
     let token;
@@ -104,7 +109,7 @@ export const HomeScreen = ({ navigation }) => {
     } else {
       alert('Must use physical device for Push Notifications');
     }
-  
+
     if (Platform.OS === 'android') {
       Notifications.setNotificationChannelAsync('default', {
         name: 'default',
@@ -113,34 +118,52 @@ export const HomeScreen = ({ navigation }) => {
         lightColor: '#FF231F7C',
       });
     }
-  
+
     return token;
   }
 
+  async function handleLike(index) {
+    try {
+      await firestore
+        .collection('users')
+        .doc(users[index]._id)
+        .update({
+          likes: firebase.firestore. FieldValue.arrayUnion(id),
+        });
 
-  // useEffect(() => {
-  //   dispatch(getData());
-  // }, [dispatch]);
-
-  // useEffect(() => {
-  //   setUsers(data);
-  // }, [data]);
-
-  function handleLike() {
-    nextUser();
+      nextUser();
+    } catch (err) {
+      console.log(err);
+    }
   }
 
-  function handlePass() {
+  function handlePass(index) {
     nextUser();
   }
 
   function nextUser() {
     const nextIndex = users.length - 2 === currentIndex ? 0 : currentIndex + 1;
     setCurrentIndex(nextIndex);
-  };
+  }
 
-  function submitFilter(){
-    setVisible(false)
+  const submitFilter = async () => {
+    const genders = ['female', 'male', 'shemale'];
+    setCurrentIndex(0);
+    firestore
+      .collection('users')
+      .where('address', '==', location)
+      .where('gender', '==', genders[gender])
+      .onSnapshot((querySnapshot) => {
+        const users = querySnapshot.docs.map((documentSnapshot) => {
+          return {
+            _id: documentSnapshot.id,
+            ...documentSnapshot.data(),
+          };
+        });
+
+        setUsers(users);
+      });
+    setVisible(false);
   };
 
   return (
@@ -157,48 +180,59 @@ export const HomeScreen = ({ navigation }) => {
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <View style={styles.filterHeader}>
-                <TouchableOpacity style={[styles.btn, {marginLeft: -15}]} onPress={()=>setVisible(false)}>
+                <TouchableOpacity style={[styles.btn, { marginLeft: -15 }]} onPress={() => setVisible(false)}>
                   <Ionicons name="ios-close-outline" size={24} color="black" />
                 </TouchableOpacity>
 
                 <Text style={styles.filterTitle}>Filters</Text>
 
-                <TouchableOpacity style={[styles.btn, {marginRight: -15}]} onPress={submitFilter}>
+                <TouchableOpacity style={[styles.btn, { marginRight: -15 }]} onPress={submitFilter}>
                   <Ionicons name="checkmark-sharp" size={24} color="#FDAAA3" />
                 </TouchableOpacity>
               </View>
 
               <View style={styles.filterContent}>
                 <View style={styles.location}>
-                <Text style={styles.filterText}>Location</Text>
-                  <TextInput style={styles.inputLocation} placeholder="Location" />
+                  <Text style={styles.filterText}>Location</Text>
+                  <TextInput style={styles.inputLocation} placeholder="Location" onChangeText={setLocation} />
                 </View>
 
-                <View style={{marginVertical: 16}}>
+                <View style={{ marginVertical: 16 }}>
                   <Text style={styles.filterText}>Gender</Text>
-                  <SegmentedControlTab 
-                  values={['Female', 'Male', 'Shemale']} 
-                  tabStyle={{borderColor: '#FDAAA3', color: '#333'}} 
-                  activeTabStyle={{backgroundColor: '#FDAAA3'}}
-                  tabTextStyle={{color: '#333'}}
-                  tabsContainerStyle={{height: 38}}
-                  selectedIndex={gender} 
-                  onTabPress={(index) => setGender(index)}
-                   />
+                  <SegmentedControlTab
+                    values={['Female', 'Male', 'Shemale']}
+                    tabStyle={{ borderColor: '#FDAAA3', color: '#333' }}
+                    activeTabStyle={{ backgroundColor: '#FDAAA3' }}
+                    tabTextStyle={{ color: '#333' }}
+                    tabsContainerStyle={{ height: 38 }}
+                    selectedIndex={gender}
+                    onTabPress={(index) => setGender(index)}
+                  />
                 </View>
 
                 <View style={styles.filterAge}>
-                  <Text style={styles.filterText}>Age <Text style={{fontSize: 16}}>({value.join(" - ")})</Text></Text>
-                  <Slider animateTransition maximumTrackTintColor="#ccc" maximumValue={35} minimumTrackTintColor="#FDAAA3" minimumValue={16} step={2} value={value} thumbTintColor="#FDAAA3" onValueChange={(value) => setValue(value)}
-                  />
+                  <Text style={styles.filterText}>
+                    Age <Text style={{ fontSize: 16 }}>({ages.join(' - ')})</Text>
+                  </Text>
+                  <Slider animateTransition maximumTrackTintColor="#ccc" maximumValue={35} minimumTrackTintColor="#FDAAA3" minimumValue={16} step={2} value={ages} thumbTintColor="#FDAAA3" onValueChange={(value) => setAges(value)} />
                 </View>
               </View>
             </View>
           </View>
         </Modal>
       </View>
-      
-      {users.length >= 1 && users.map((u, i) => currentIndex === i && <Swipes key={i} currentIndex={currentIndex} users={users} handleLike={handleLike} handlePass={handlePass} navigation={navigation}></Swipes>)}
+
+      {/* {users.length > 0 && users.map((u, i) =><Swipes key={i} currentIndex={currentIndex} users={users} handleLike={handleLike} handlePass={handlePass} navigation={navigation}></Swipes>)} */}
+
+      {users.length >= 1 ? (
+        users.map((u, i) => currentIndex === i && <Swipes key={i} currentIndex={currentIndex} users={users} handleLike={handleLike} handlePass={handlePass} navigation={navigation}></Swipes>)
+      ) : (
+        <View style={styles.NotFoundPage}>
+          <Text style={styles.primaryText}>We're so sorry</Text>
+          <Text style={styles.subText}>What you were looking for was not found ;)</Text>
+          <Image style={styles.NotFoundImage} source={require('../../assets/images/page-not-found.png')} />
+        </View>
+      )}
     </View>
   );
 };
@@ -233,7 +267,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
-    marginTop: 5
+    marginTop: 5,
   },
 
   filterTitle: {
@@ -241,8 +275,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  filterText:{
-    fontSize: 16, fontWeight: '600', marginBottom: 10, color: '#333'
+  filterText: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: '#333',
   },
 
   btn: {
@@ -253,11 +290,33 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
 
-  inputLocation:{
+  inputLocation: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     padding: 5,
     borderRadius: 10,
-    paddingHorizontal: 10
-  }
+    paddingHorizontal: 10,
+  },
+
+  NotFoundPage: {
+    position: 'absolute',
+    alignSelf: 'center',
+    top: '30%',
+    right: '14%',
+    alignItems: 'center',
+  },
+
+  primaryText: {
+    fontSize: 30,
+    color: '#333',
+  },
+
+  subText: {
+    marginBottom: 10,
+  },
+
+  NotFoundImage: {
+    width: 150,
+    height: 150,
+  },
 });

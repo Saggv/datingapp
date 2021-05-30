@@ -9,6 +9,7 @@ export default function Swipes({ users, currentIndex, handleLike, handlePass, na
 
   const [willLike, setWillLike] = useState(false);
   const [willPass, setWillPass] = useState(false);
+
   const renderLeftActions = () => {
     return (
       <RectButton style={styles.container}>
@@ -28,18 +29,18 @@ export default function Swipes({ users, currentIndex, handleLike, handlePass, na
   return (
     <Swipeable
      ref={ref}
-      friction={1}
+      friction={2}
       leftThreshold={40}
       rightThreshold={40}
       renderLeftActions={renderLeftActions}
       renderRightActions={renderRightActions}
       onSwipeableLeftOpen={() => {
         setWillLike(false);
-        handleLike();
+        handlePass(currentIndex);
       }}
       onSwipeableRightOpen={() => {
         setWillPass(false);
-        handlePass();
+        handleLike(currentIndex);
       }}
       onSwipeableLeftWillOpen={() => setWillLike(true)}
       onSwipeableRightWillOpen={() => setWillPass(true)}

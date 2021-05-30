@@ -1,27 +1,58 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
+import { firestore } from '../firebase/config';
+import * as firebase from 'firebase';
 
-const {width} = Dimensions.get('window');
+export default function LikeThumbnail({ data, navigation }) {
+  const { id } = useSelector((state) => state.auth);
 
-export default function LikeThumbnail({data}) {
+  const handleLike = async () => {
+    try {
+      await firestore
+        .collection('users')
+        .doc(data._id)
+        .update({
+          likes: firebase.firestore.FieldValue.arrayUnion(id),
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handlePass = async () => {
+    try {
+      await firestore
+        .collection('users')
+        .doc(id)
+        .update({
+          likes: firebase.firestore.FieldValue.arrayRemove(data._id),
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Image style={styles.photo} source={{ uri:data.img}} />
+      <TouchableOpacity onPress={() => navigation?.navigate('HomeDetail', { id: data._id })}>
+        <Image style={styles.photo} source={{ uri: data.avatarUrl }} />
 
-      <View style={styles.info}>
-        <Text style={styles.secondaryText}>{data.name}</Text>
+        <View style={styles.info}>
+          <Text style={styles.secondaryText}>{data.name}</Text>
 
-        <View style={styles.action}>
-          <TouchableOpacity style={styles.button}>
-            <Ionicons name="close-outline" size={25} color="#000" />
-          </TouchableOpacity>
+          <View style={styles.action}>
+            <TouchableOpacity style={styles.button} onPress={() => handlePass()}>
+              <Ionicons name="close-outline" size={25} color="#000" />
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}>
-            <Ionicons name="heart" size={25} color="#fdaaa3" />
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => handleLike()}>
+              <Ionicons name="heart" size={25} color="#fdaaa3" />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -30,14 +61,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     height: 200,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.20,
+    shadowOpacity: 0.2,
     shadowRadius: 1.41,
-    
+
     elevation: 2,
     borderRadius: 10,
     overflow: 'hidden',
@@ -46,8 +77,8 @@ const styles = StyleSheet.create({
 
   secondaryText: {
     fontSize: 18,
-    textAlign :'center',
-    color: '#fff'
+    textAlign: 'center',
+    color: '#fff',
   },
 
   photo: {

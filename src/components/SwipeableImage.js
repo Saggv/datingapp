@@ -8,15 +8,15 @@ export default function SwipeableImage({ user, swipesRef }) {
   const navigation = useNavigation(); 
 
   if (!user) {
-    return <Text>Loadding</Text>;
+    return <Text>Loading</Text>;
   }
 
   const handleLike = () => {
-    swipesRef.current.openRight();
+    swipesRef?.current.openRight();
   };
 
   const handlePass = () => {
-    swipesRef.current.openLeft();
+    swipesRef?.current.openLeft();
   };
 
   const openDetail = () =>{

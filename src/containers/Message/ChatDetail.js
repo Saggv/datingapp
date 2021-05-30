@@ -83,7 +83,7 @@ const  getNotificationToken = async() =>{
 };
 
 const sendNotification = async(message) =>{
-  const res = await fetch("https://exp.host/--/api/v2/push/send", {
+   await fetch("https://exp.host/--/api/v2/push/send", {
     method: "POST",
     headers: {
       Accept: "application/json",
