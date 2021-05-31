@@ -7,14 +7,16 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { MessageScreen } from '../../containers/Message';
 
 // import others
-import { CHAT_ICON, CHAT_ACTIVE_ICON } from '../../../assets/images/BottomTabNavigator';
 import { CHAT_DETAIL, MESSAGE_SCREEN } from '../../constants/StackNavigation';
+import { FontAwesome } from '@expo/vector-icons'; 
 import { ChatDetail } from '../../containers/Message/ChatDetail';
 
 // main
 const Stack = createStackNavigator();
 
-export const IconTabMessage = ({ focused }) => <Image source={focused ? CHAT_ACTIVE_ICON : CHAT_ICON} style={focused ? styles.messageActiveIcon : styles.messageIcon} />;
+export const IconTabMessage = ({ focused }) =>(
+  <FontAwesome name={focused ? "comment" : "comment-o"} size={28} color={focused ? '#FDAAA3' : '#333'} />
+);
 
 // Screen of tab home show tabs
 export const MessageVisibleTab = () => {

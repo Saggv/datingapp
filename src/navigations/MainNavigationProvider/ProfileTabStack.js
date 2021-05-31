@@ -7,16 +7,20 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { ProfileScreen } from '../../containers/Profile';
 
 // import others
-import { PROFILE_ICON, PROFILE_ACTIVE_ICON } from '../../../assets/images/BottomTabNavigator';
+import { FontAwesome } from '@expo/vector-icons'; 
+import { FontAwesome5 } from '@expo/vector-icons'; 
 import { PROFILE_SCREEN, SETTING_SCREEN } from '../../constants/StackNavigation';
 import SettingScreen from '../../containers/Profile/setting';
 
 // main
 const Stack = createStackNavigator();
 
-export const IconTabProfile = ({ focused }) => (
-  <Image source={focused ? PROFILE_ACTIVE_ICON : PROFILE_ICON} style={styles.profileIcon} />
-);
+export const IconTabProfile = ({ focused }) => {
+  if(focused){
+   return <FontAwesome name="user" size={28} color="#FDAAA3" />
+  }
+return (<FontAwesome5 name="user" size={24} color="#333" />)
+  };
 
 // Screen of tab home show tabs
 export const ProfileVisibleTab = () => {

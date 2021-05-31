@@ -25,15 +25,15 @@ const ProfileScreen =({ navigation })=> {
    firestore.collection('users').doc(id).get()
     .then(res => {
       setProfile(res.data());
-      const currentDate = moment().format('DD/MM/YYYY').split("/").map(date => + date);
-      const userBirthday = profile?.age.split("/").map(date => + date) || ['2000', '10', '6'];
-      console.log(profile.age);
-      setAge(moment(currentDate.reverse()).diff(moment(userBirthday?.reverse()), 'years'));
     })
     .catch(err => {
       console.log('Error getting documents', err);
     });
   },[]);
+
+  useEffect(() =>{
+    setAge(moment().diff(moment(profile?.age, "DD-MM-YYYY"), 'years'));
+  },[profile])
 
   return (
     <ScrollView style={styles.container}>
@@ -187,7 +187,7 @@ marginTop:0,
   alignItems: 'center',
   justifyContent: 'center',
   height: 100,
-  backgroundColor: '#fee2e2',
+  backgroundColor: '#D1D5DB',
 },
 
 about:{

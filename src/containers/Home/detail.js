@@ -1,4 +1,4 @@
-import React, {useEffect, useState, Fragment} from 'react';
+import React, {useEffect, useState, Fragment, useLayoutEffect} from 'react';
 import { View, Text, StyleSheet, Dimensions, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { SwiperFlatList } from 'react-native-swiper-flatlist';
 import {useRoute} from '@react-navigation/native';
@@ -14,6 +14,10 @@ export const HomeDetail = ({ navigation }) => {
   const [age, setAge] = useState();
   const route = useRoute();
   const [currentUser, setCurrentUser] = useState();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({headerShown: false});
+  }, [navigation]);
 
   useEffect(()=>{
     firestore.collection('users').doc(route.params.id).get()
@@ -34,9 +38,7 @@ export const HomeDetail = ({ navigation }) => {
   },[navigation]);
 
   useEffect(()=>{
-    const currentDate = moment().format('DD/MM/YYYY').split("/").map(date => + date);
-    const userBirthday = user?.age.split("/").map(date => + date) || [];
-    setAge(moment(currentDate?.reverse()).diff(moment(userBirthday.reverse()), 'years'));
+    setAge(moment().diff(moment(user?.age, "DD-MM-YYYY"), 'years'))
   },[user]);
 
   const createChatRoom = async() =>{

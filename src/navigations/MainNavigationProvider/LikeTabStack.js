@@ -7,14 +7,14 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { LikeScreen } from '../../containers/Like';
 
 // import others
-import { PREFERENCES_ICON, PREFERENCES_ACTIVE_ICON } from '../../../assets/images/BottomTabNavigator';
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { LIKE_SCREEN } from '../../constants/StackNavigation';
 
 // main
 const Stack = createStackNavigator();
 
 export const IconTabLike = ({ focused }) => (
-  <Image source={focused ? PREFERENCES_ACTIVE_ICON : PREFERENCES_ICON} style={styles.preferencesIcon} />
+  <MaterialCommunityIcons name={focused ? "heart-multiple" : "heart-multiple-outline"} size={28} color={focused ? '#FDAAA3' : '#333'} /> 
 );
 
 // Screen of tab home show tabs

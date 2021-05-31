@@ -7,16 +7,17 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { HomeScreen } from '../../containers/Home';
 
 // import others
-import { HOME_ICON, HOME_ACTIVE_ICON } from '../../../assets/images/BottomTabNavigator';
 import { HOME_SCREEN, HOME_DETAIL } from '../../constants/StackNavigation';
 import {HomeDetail} from '../../containers/Home/detail';
+
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
 // main
 const Stack = createStackNavigator();
 
 export const IconTabHome = ({ focused }) => (
-  <Image source={focused ? HOME_ACTIVE_ICON : HOME_ICON} style={focused ? styles.homeActiveIcon : styles.homeIcon} />
-);
+  <MaterialCommunityIcons name={focused ? "checkbox-multiple-blank" : "checkbox-multiple-blank-outline"} size={28} color={focused ? '#FDAAA3' : '#333'} /> 
+  );
 
 // Screen of tab home show tabs
 export const HomeStackVisibleTab = () => {
