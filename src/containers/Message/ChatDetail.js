@@ -83,7 +83,7 @@ const  getNotificationToken = async() =>{
 };
 
 const sendNotification = async(message) =>{
-   await fetch("https://exp.host/--/api/v2/push/send", {
+  const res =  await fetch("https://exp.host/--/api/v2/push/send", {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -149,7 +149,7 @@ const sendNotification = async(message) =>{
       marginRight: 5
     }}
   >
-  <Ionicons name={'send'} size={28} color='#FF8F86' />
+  <Ionicons name={'send'} size={26} color='#FF8F86' />
   </Send>
    )
  };

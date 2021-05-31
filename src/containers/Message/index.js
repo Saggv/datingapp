@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useLayoutEffect} from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, FlatList } from 'react-native';
 import {useSelector } from 'react-redux'
 import {firestore} from '../../firebase/config';
@@ -10,6 +10,38 @@ import tailwind from 'tailwind-rn';
 const MessageScreen = ({ navigation }) => {
   const [threads, setThreads] = useState([]);
   const {id}= useSelector(state => state.auth);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: (props) => (
+        <Text {...props} style={{ color: '#333', fontWeight: '600', fontSize: 18,}}>
+           Messages
+        </Text>
+      ),
+      headerStyle: {
+        height: 50,
+        backgroundColor: '#fff', //Set Header color
+        // elevation: 0, // remove shadow on Android
+        // shadowOpacity: 0, // remove shadow on iOS
+        boxShadow:{
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 12,
+          },
+          shadowOpacity: 0.58,
+          shadowRadius: 16.00,
+          
+          elevation: 6,
+        }
+      },
+      headerTintColor: '#333', //Set Header text color
+      headerTitleStyle: {
+        fontWeight: 'bold', //Set Header text style
+      },
+    });
+  }, [navigation]);
+
 
   useEffect( ()=>{
       getChatRooms();
@@ -61,6 +93,7 @@ return function cleanup(){
             {userData.map((img) => (
               <View style={[styles.user, styles.boxShadow]} key={img}>
                 <Image style={styles.userPhoto} source={{ uri: img }} />
+                <View style={styles.online}></View>
               </View>
             ))}
           </ScrollView>
@@ -79,6 +112,7 @@ return function cleanup(){
                 {userData.map((img, index) => (
                   <View style={[styles.user, styles.boxShadow]} key={index}>
                     <Image style={styles.userPhoto} source={{ uri: img }} />
+                    <View style={styles.online}></View>
                   </View>
                 ))}
               </ScrollView>
@@ -139,6 +173,16 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'cover',
     borderRadius: 50,
+  },
+
+  online: {
+    width: 8,
+    height: 8,
+    backgroundColor: '#26de81',
+    borderRadius: 50,
+    position: 'absolute',
+    bottom: 0,
+    right: '40%'
   },
 
   wrapper: {

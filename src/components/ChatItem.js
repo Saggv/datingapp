@@ -7,7 +7,6 @@ export const ChatItem = ({ navigation, item })  => {
   const {id}= useSelector(state => state.auth);
 
   const checkUser=(item)=>{
-    console.log(item);
     if(item.targetId === id){
         return {name: item.fromName, avatarUrl: item.fromAvatar};
     }else{
@@ -19,6 +18,7 @@ export const ChatItem = ({ navigation, item })  => {
     <TouchableOpacity style={styles.container} onPress={()=>navigation.navigate('ChatDetail', {roomId: item?.id, user: checkUser(item)})}>
       <TouchableOpacity style={[styles.chatItemPhoto, styles.boxShadow]}>
         <Image style={styles.photo} source={{ uri: checkUser(item).avatarUrl }} />
+        <View style={styles.online}></View>
       </TouchableOpacity>
 
       <View style={styles.chatContent}>
@@ -59,6 +59,16 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode:  'cover',
     borderRadius: 50
+  },
+
+  online: {
+    width: 10,
+    height: 10,
+    backgroundColor: '#26de81',
+    borderRadius: 50,
+    position: 'absolute',
+    bottom: 3,
+    right: 2
   },
 
   chatContent: {
