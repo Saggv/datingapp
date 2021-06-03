@@ -1,15 +1,16 @@
 import React, { useCallback, useEffect, useState, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {getRoomChat} from './message.actions';
 import { Ionicons } from '@expo/vector-icons';
 import { GiftedChat, Actions, Send } from 'react-native-gifted-chat';
 import { Feather } from '@expo/vector-icons'; 
 import {useRoute} from '@react-navigation/native';
-import {useSelector } from 'react-redux'
+import {useSelector, useDispatch } from 'react-redux'
 
 import {firestore} from '../../firebase/config';
 
 export const ChatDetail = ({navigation}) => {
+  const dispatch = useDispatch();
   const route = useRoute();
   const {id, profile}= useSelector(state => state.auth);
   const [pushToken, setPushToken] = useState();
@@ -124,6 +125,7 @@ const sendNotification = async(message) =>{
     );
     setMessages((previousMessages) => GiftedChat.append(previousMessages, messages));
     sendNotification(messages[0].text);
+    dispatch(getRoomChat(id))
   }, []);
 
   function renderActions(props) {

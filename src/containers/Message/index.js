@@ -1,14 +1,15 @@
 import React, {useEffect, useState, useLayoutEffect} from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, FlatList } from 'react-native';
-import {useSelector } from 'react-redux'
-import {firestore} from '../../firebase/config';
+import { useDispatch, useSelector } from 'react-redux';
+import {getRoomChat} from './message.actions';
 
 import { ChatItem, Search } from '../../components';
 
 import tailwind from 'tailwind-rn';
 
 const MessageScreen = ({ navigation }) => {
-  const [threads, setThreads] = useState([]);
+  const dispatch = useDispatch();
+  const {roomChat}= useSelector(state => state.message);
   const {id}= useSelector(state => state.auth);
 
   useLayoutEffect(() => {
@@ -44,30 +45,8 @@ const MessageScreen = ({ navigation }) => {
 
 
   useEffect( ()=>{
-      getChatRooms();
-  },[]);
-
-const getChatRooms = async () =>{
-  const listRooms = [];
-  const result =[];
-  const resThreads = await firestore.collection('THREADS').get();
-
-  await resThreads.forEach((docs) =>{
-    listRooms.push({...docs.data(), id: docs.id});
-  });
-
-  listRooms.forEach(room =>{
-    if(room.targetId === id || room.fromId === id){
-      return result.push(room);
-    }
-  });
-
-  setThreads(result);
-// return () => resThreads();
-return function cleanup(){
-  setThreads(result);
-}
-}
+      dispatch(getRoomChat(id));
+  },[navigation]);
 
   const userData = [
       'https://i.pinimg.com/originals/f6/a8/e9/f6a8e92bd71a9d8ea41a6adca0fab8f5.jpg',
@@ -81,14 +60,11 @@ return function cleanup(){
   return (
     <View style={styles.container}>
             {
-        threads.length < 1 ? (
+        roomChat.length < 1 ? (
           <View style={styles.header}>
           <View style={{paddingHorizontal: 8}}>
           <Search />
           </View>
-
-          <Text style={tailwind('text-center mt-4 mb-2')}>You haven't had any chat yet!</Text>
-
           <ScrollView style={[styles.scrollView, {backgroundColor: '#fff'}]} horizontal={true} showsHorizontalScrollIndicator={false}>
             {userData.map((img) => (
               <View style={[styles.user, styles.boxShadow]} key={img}>
@@ -97,10 +73,11 @@ return function cleanup(){
               </View>
             ))}
           </ScrollView>
+          <Text style={tailwind('text-center mt-4 mb-8')}>You haven't had any chat yet!</Text>
         </View>
         ):(
           <FlatList
-          data={threads}
+          data={roomChat}
           contentContainerStyle={styles.wrapper}
           ListHeaderComponent={
             <View style={styles.header}>
