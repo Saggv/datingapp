@@ -5,6 +5,7 @@ import { firestore } from '../../firebase/config';
 import {  useSelector } from 'react-redux';
 
 import LikeThumbnail from '../../components/LikeThumbnail';
+import { NotFoundScreen } from '../../components';
 
 const LikeScreen = ({ navigation }) => {
   const { id, profile } = useSelector((state) => state.auth);
@@ -81,24 +82,38 @@ const LikeScreen = ({ navigation }) => {
   // ]
 
   return (
-      <FlatList
-        data={data}
-        numColumns={2}
-        contentContainerStyle={styles.container}
-        ListHeaderComponent={
-          <View style={styles.header}>
-            <Text style={styles.primaryText}>Your preferences</Text>
-            <Text style={styles.paragraph}>Here you can see the people you like. Here you can reciprocate.</Text>
+    <View style={{flex:1}}>
+      {
+        data.length > 0 ? (
+          <FlatList
+          data={data}
+          numColumns={2}
+          contentContainerStyle={styles.container}
+          ListHeaderComponent={
+            <View style={styles.header}>
+              <Text style={styles.primaryText}>Your preferences</Text>
+              <Text style={styles.paragraph}>Here you can see the people you like. Here you can reciprocate.</Text>
+            </View>
+          }
+          renderItem={({ item }) => (
+            <View style={styles.wrapper}>
+              <LikeThumbnail data={item} navigation={navigation} />
+            </View>
+          )}
+          keyExtractor={item => item.img}
+        />
+        ): (
+          <View style={{flex:1, backgroundColor: '#fff'}}>
+                        <View style={[styles.header, {backgroundColor: '#f9f9f9'}]}>
+              <Text style={styles.primaryText}>Your preferences</Text>
+              <Text style={styles.paragraph}>Here you can see the people you like. Here you can reciprocate.</Text>
+            </View>
+            <NotFoundScreen headerText="We're so sorry!" subText="You don't have any active yet!!"></NotFoundScreen>
           </View>
-        }
-        renderItem={({ item }) => (
-          <View style={styles.wrapper}>
-            <LikeThumbnail data={item} navigation={navigation} />
-          </View>
-        )}
-        keyExtractor={item => item.img}
-      />
-  );
+        )
+      }
+      </View>
+  )
 };
 
 const styles = StyleSheet.create({

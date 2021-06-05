@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Modal, TextInput, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { getData } from './thunks';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import * as firebase from 'firebase';
@@ -12,6 +11,8 @@ import { firestore } from '../../firebase/config';
 import { Ionicons } from '@expo/vector-icons';
 import Swipes from '../../components/Swipes';
 import { getCurrentUser } from '../App/authSlice';
+import {getData, sendNotification} from './action';
+import { NotFoundScreen } from '../../components';
 
 export const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -67,7 +68,7 @@ export const HomeScreen = ({ navigation }) => {
     });
   }, [navigation]);
 
-  const getAllUsers = () => {
+  const getAllUsers = async() => {
     setCurrentIndex(0);
     firestore.collection('users').onSnapshot((querySnapshot) => {
       const users = querySnapshot.docs.map((documentSnapshot) => {
@@ -82,6 +83,7 @@ export const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     getAllUsers();
+    // dispatch(getData());
   }, []);
 
   useEffect(() => {
@@ -131,6 +133,14 @@ export const HomeScreen = ({ navigation }) => {
           likes: firebase.firestore. FieldValue.arrayUnion(id),
         });
 
+        const notification = {
+          token: users[index].push_token,
+          title: 'Someone like you!',
+          message: `${profile.name} has just liked you!`
+        }
+
+        dispatch(sendNotification(notification))
+
       nextUser();
     } catch (err) {
       console.log(err);
@@ -168,7 +178,7 @@ export const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.centeredView}>
+      <View>
         <Modal
           animationType="slide"
           transparent={true}
@@ -224,14 +234,10 @@ export const HomeScreen = ({ navigation }) => {
 
       {/* {users.length > 0 && users.map((u, i) =><Swipes key={i} currentIndex={currentIndex} users={users} handleLike={handleLike} handlePass={handlePass} navigation={navigation}></Swipes>)} */}
 
-      {users.length >= 1 ? (
+      {users.length > 0 ? (
         users.map((u, i) => currentIndex === i && <Swipes key={i} currentIndex={currentIndex} users={users} handleLike={handleLike} handlePass={handlePass} navigation={navigation}></Swipes>)
       ) : (
-        <View style={styles.NotFoundPage}>
-          <Text style={styles.primaryText}>We're so sorry</Text>
-          <Text style={styles.subText}>What you were looking for was not found ;)</Text>
-          <Image style={styles.NotFoundImage} source={require('../../assets/images/page-not-found.png')} />
-        </View>
+          <NotFoundScreen headerText="We're so sorry!" subText="What you were looking for was not found ;)"></NotFoundScreen>
       )}
     </View>
   );
@@ -296,27 +302,5 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 10,
     paddingHorizontal: 10,
-  },
-
-  NotFoundPage: {
-    position: 'absolute',
-    alignSelf: 'center',
-    top: '30%',
-    right: '14%',
-    alignItems: 'center',
-  },
-
-  primaryText: {
-    fontSize: 30,
-    color: '#333',
-  },
-
-  subText: {
-    marginBottom: 10,
-  },
-
-  NotFoundImage: {
-    width: 150,
-    height: 150,
   },
 });

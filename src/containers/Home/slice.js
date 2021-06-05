@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import {getData} from './thunks';
+import {getData} from './action';
 
 const initialState={
    data: []
@@ -10,14 +10,12 @@ const homeSlice = createSlice({
   initialState: initialState,
   reducers:{
   },
-  extraReducers: (builder) => {
-    builder.addCase(getData.fulfilled, (state, action) =>{
-      return ({
-        ...state,
-        data: action.payload
-      })
-    });
-  },
+  extraReducers: {
+    [getData.fulfilled]: (state, action) => {
+      console.log(action.payload);
+      state.data = [];
+    }
+  }
 });
 
 export default homeSlice.reducer;

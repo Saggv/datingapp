@@ -4,3 +4,4 @@ export * from './LikeThumbnail';
 export * from './SwipeableImage';
 export * from './Swipes';
 export * from './svgComponent';
+export * from './NotFound';
